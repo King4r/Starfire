@@ -11,7 +11,6 @@
         :root {
             --primary: #2563eb;
             --bg: #020617;
-            --sidebar: #010409;
             --card: rgba(15, 23, 42, 0.7);
             --border: rgba(255, 255, 255, 0.08);
             --text: #f8fafc;
@@ -36,29 +35,23 @@
         .gate-input { 
             background: #000; border: 1px solid var(--border); padding: 14px; 
             color: var(--primary); width: 100%; text-align: center; font-family: 'JetBrains Mono';
-            outline: none; margin-top: 2rem; border-radius: 12px; font-size: 1.2rem; letter-spacing: 4px;
+            outline: none; margin-top: 2rem; border-radius: 12px; font-size: 1.2rem;
         }
-        .gate-btn {
-            width: 100%; margin-top: 1.5rem; padding: 14px; background: var(--primary);
-            color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
-        }
-        .gate-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
         /* --- SIDEBAR --- */
         aside {
-            width: var(--sidebar-w); background: var(--sidebar); color: white;
-            padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
+            width: var(--sidebar-w); background: #010409; color: white;
+            padding: 2.2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
             border-right: 1px solid var(--border); z-index: 100;
         }
-        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3.5rem; display: flex; align-items: center; gap: 10px; }
         .logo-box { width: 30px; height: 30px; background: var(--primary); border-radius: 8px; }
 
         nav { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
         .nav-item { color: var(--dim); text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); border-right: 3px solid var(--primary); }
 
-        /* --- MAIN VIEW --- */
+        /* --- MAIN CONTENT --- */
         main { margin-left: var(--sidebar-w); flex: 1; padding: 3rem; display: none; width: 100%; }
         header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
 
@@ -88,10 +81,10 @@
     <!-- Auth Gate -->
     <div id="gate">
         <div class="gate-card">
-            <div class="logo" style="justify-content: center; margin-bottom: 1rem;"><div class="logo-box"></div> STARFIRE</div>
-            <h2 class="mono" style="font-size: 0.9rem; color: var(--dim);">CORE_FOUNDER_ACCESS</h2>
+            <div class="logo" style="justify-content: center;"><div class="logo-box"></div> STARFIRE</div>
+            <p class="mono" style="font-size: 0.8rem; color: var(--dim); margin-top: 10px;">FOUNDER_ACCESS_ONLY</p>
             <input type="password" id="pass" class="gate-input" placeholder="0000" onkeyup="if(event.key==='Enter') auth()">
-            <button onclick="auth()" class="gate-btn" id="auth-btn">Authorize Engine</button>
+            <button onclick="auth()" class="nav-item active" style="width: 100%; margin-top: 2rem; justify-content: center; font-weight: 800; color: white; border: none;">AUTHORIZE SESSION</button>
         </div>
     </div>
 
@@ -99,141 +92,136 @@
     <aside>
         <div class="logo"><div class="logo-box"></div> Starfire</div>
         <nav>
-            <div class="nav-item active">📊 Platform Intelligence</div>
-            <div class="nav-item">👥 Merchant Directory</div>
-            <div class="nav-item">🛡️ Security Logs</div>
+            <div class="nav-item active">📊 Platform Stats</div>
+            <div class="nav-item">👥 Merchants</div>
+            <div class="nav-item">⚙️ System Logs</div>
         </nav>
-        <div onclick="location.reload()" style="margin-top: auto; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 0.8rem; padding: 1rem;">🔒 LOCK TERMINAL</div>
+        <div onclick="location.reload()" style="margin-top: auto; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 0.8rem;">🔒 LOCK</div>
     </aside>
 
-    <!-- Content -->
+    <!-- Main Dashboard -->
     <main id="main-view">
         <header>
             <div>
-                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">Founder OS</h1>
-                <p id="sync-time" class="mono" style="color: var(--primary); font-size: 0.75rem; margin-top: 8px;">STATUS: CONNECTED_TO_CLOUD</p>
+                <h1 style="font-size: 2.2rem; font-weight: 800;">Command Center</h1>
+                <p id="sync-time" class="mono" style="color: var(--primary); font-size: 0.75rem; margin-top: 8px;">STATUS: DIRECT_CLOUD_LINK</p>
             </div>
-            <div class="mono" style="font-size: 0.7rem; color: var(--dim); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px;">V_4.5_STABLE</div>
+            <div class="mono" style="font-size: 0.7rem; color: var(--dim);">OS_V4.6_MASTER</div>
         </header>
 
         <div class="stat-grid">
-            <div class="stat-card">
-                <div class="label">Total Merchants</div>
-                <div class="val mono" id="stat-merchants">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Gross Revenue (USD)</div>
-                <div class="val mono" id="stat-sales">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Processed Orders</div>
-                <div class="val mono" id="stat-orders">0</div>
-            </div>
+            <div class="stat-card"><div class="label">Total Merchants</div><div class="val mono" id="stat-users">0</div></div>
+            <div class="stat-card"><div class="label">Gross Sales Vol</div><div class="val mono" id="stat-sales">$0.00</div></div>
+            <div class="stat-card"><div class="label">Accumulated Orders</div><div class="val mono" id="stat-orders">0</div></div>
         </div>
 
         <div class="chart-grid">
-            <div class="chart-card">
-                <div class="label" style="margin-bottom: 1.5rem;">Signup_Growth_Timeline</div>
-                <div style="height: 280px;"><canvas id="growthChart"></canvas></div>
-            </div>
-            <div class="chart-card">
-                <div class="label" style="margin-bottom: 1.5rem;">Anonymous_Traffic_Heartbeat</div>
-                <div style="height: 280px;"><canvas id="trafficChart"></canvas></div>
-            </div>
+            <div class="chart-card"><div class="label">Merchant_Signups</div><div style="height: 280px;"><canvas id="growthChart"></canvas></div></div>
+            <div class="chart-card"><div class="label">Anonymous_Traffic</div><div style="height: 280px;"><canvas id="trafficChart"></canvas></div></div>
         </div>
 
         <div class="table-card">
             <table>
-                <thead>
-                    <tr>
-                        <th>Merchant Identity</th>
-                        <th>Platform_URL</th>
-                        <th>Integrity</th>
-                        <th>Revenue_Impact</th>
-                    </tr>
-                </thead>
-                <tbody id="merchant-rows">
-                    <!-- Dynamic Data Injected Here -->
-                </tbody>
+                <thead><tr><th>Merchant</th><th>Store_URL</th><th>Status</th><th>Revenue</th></tr></thead>
+                <tbody id="merchant-rows"></tbody>
             </table>
         </div>
     </main>
 
     <script>
-        // --- CLOUD CONFIG ---
         const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let charts = {};
 
-        async function auth() {
-            const btn = document.getElementById('auth-btn');
-            const passInput = document.getElementById('pass');
-            const passcode = passInput.value.trim();
-
-            btn.innerText = "Verifying...";
-            
-            // CALL CLOUD RPC
-            const { data, error } = await _supabase.rpc('get_starfire_intelligence', { founder_key: passcode });
-
-            if (error) {
-                console.error("Auth Error:", error);
-                alert("ACCESS_DENIED: Invalid Founder Key");
-                btn.innerText = "Authorize Engine";
-                passInput.value = "";
-            } else {
+        function auth() {
+            const pass = document.getElementById('pass').value.trim();
+            if (pass === "2009") {
                 document.getElementById('gate').style.display = 'none';
                 document.getElementById('main-view').style.display = 'block';
-                populateDashboard(data);
+                fetchEverything();
+            } else {
+                alert("ACCESS_DENIED");
+                document.getElementById('pass').value = "";
             }
         }
 
-        function populateDashboard(data) {
-            document.getElementById('stat-merchants').innerText = data.total_merchants;
-            document.getElementById('stat-sales').innerText = `$${data.global_sales.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('stat-orders').innerText = data.global_orders;
-            document.getElementById('sync-time').innerText = `STREAM: LIVE // ${new Date().toLocaleTimeString()}`;
+        async function fetchEverything() {
+            // 1. Fetch Profiles
+            const { data: merchants } = await _supabase.from('profiles').select('*').order('created_at', { ascending: false });
+            
+            // 2. Fetch Traffic
+            const { data: traffic } = await _supabase.from('traffic').select('*');
 
+            // 3. Process Totals
+            let totalSales = 0;
+            let totalOrders = 0;
+            merchants.forEach(m => {
+                totalSales += (m.total_sales || 0);
+                totalOrders += (m.total_orders || 0);
+            });
+
+            document.getElementById('stat-users').innerText = merchants.length;
+            document.getElementById('stat-sales').innerText = `$${totalSales.toLocaleString()}`;
+            document.getElementById('stat-orders').innerText = totalOrders;
+            document.getElementById('sync-time').innerText = `STATUS: LIVE // ${new Date().toLocaleTimeString()}`;
+
+            // 4. Build Table
             const tbody = document.getElementById('merchant-rows');
             tbody.innerHTML = '';
-            
-            if(data.merchants) {
-                data.merchants.forEach(m => {
-                    tbody.innerHTML += `<tr>
-                        <td class="mono"><strong>${m.full_name}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${m.email}</span></td>
-                        <td style="color:var(--primary);font-size:0.8rem;">${m.shopify_url || '---'}</td>
-                        <td style="font-size:0.7rem; font-weight:700;">${m.is_active ? '🔵 ACTIVE' : '🔘 PENDING'}</td>
-                        <td class="mono">$${(m.total_sales || 0).toLocaleString()}</td>
-                    </tr>`;
-                });
-            }
+            merchants.forEach(m => {
+                tbody.innerHTML += `<tr>
+                    <td class="mono"><strong>${m.full_name}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${m.email}</span></td>
+                    <td style="color:var(--primary);font-size:0.8rem;">${m.shopify_url || '---'}</td>
+                    <td style="font-size:0.7rem; font-weight:700;">${m.shopify_token ? '🔵 ACTIVE' : '🔘 PENDING'}</td>
+                    <td class="mono">$${(m.total_sales || 0).toLocaleString()}</td>
+                </tr>`;
+            });
 
-            renderChart('growthChart', data.growth_data, '#2563eb', 'line');
-            renderChart('trafficChart', data.traffic_data, '#334155', 'bar');
+            // 5. Build Charts (Last 7 Days)
+            renderGrowthChart(merchants);
+            renderTrafficChart(traffic);
         }
 
-        function renderChart(id, chartData, color, type) {
+        function renderGrowthChart(data) {
+            const days = {};
+            data.forEach(m => {
+                const date = m.created_at.split('T')[0];
+                days[date] = (days[date] || 0) + 1;
+            });
+            const labels = Object.keys(days).sort().slice(-7);
+            const values = labels.map(l => days[l]);
+            renderChart('growthChart', labels, values, '#2563eb', 'line');
+        }
+
+        function renderTrafficChart(data) {
+            const days = {};
+            data.forEach(t => {
+                const date = t.timestamp.split('T')[0];
+                days[date] = (days[date] || 0) + 1;
+            });
+            const labels = Object.keys(days).sort().slice(-7);
+            const values = labels.map(l => days[l]);
+            renderChart('trafficChart', labels, values, '#ffffff', 'bar');
+        }
+
+        function renderChart(id, labels, values, color, type) {
             const ctx = document.getElementById(id).getContext('2d');
             if(charts[id]) charts[id].destroy();
-            
             charts[id] = new Chart(ctx, {
                 type: type,
                 data: {
-                    labels: chartData.labels || [],
+                    labels: labels.length ? labels : ['No Data'],
                     datasets: [{
-                        data: chartData.values || [],
+                        data: values.length ? values : [0],
                         borderColor: color,
                         backgroundColor: type === 'line' ? color + '11' : color,
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        borderRadius: 4
+                        borderWidth: 2, tension: 0.4, fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { 
                         x: { grid: { display: false }, ticks: { color: '#334155', font: { size: 10 } } },
@@ -244,4 +232,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
