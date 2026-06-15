@@ -3,246 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starfire | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Starfire | Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase Official Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         :root {
-            --primary: #2563eb;
-            --slate-50: #f8fafc;
-            --slate-100: #f1f5f9;
-            --slate-200: #e2e8f0;
-            --slate-700: #334155;
-            --slate-900: #0f172a;
-            --white: #ffffff;
-            --sidebar-width: 260px;
+            --primary: #3b82f6;
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --dim: #94a3b8;
+            --sidebar-w: 260px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--slate-50); color: var(--slate-900); display: flex; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
 
         /* --- SIDEBAR --- */
         aside {
-            width: var(--sidebar-width);
-            background: var(--slate-900);
-            color: white;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
+            width: var(--sidebar-w); background: #010409; color: white;
+            padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
+            border-right: 1px solid var(--border); z-index: 100;
         }
-
         .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; }
+        .logo-icon { width: 30px; height: 30px; background: var(--primary); border-radius: 8px; }
 
         nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
-        nav a { color: #94a3b8; text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 500; transition: 0.3s; }
-        nav a.active { background: var(--primary); color: white; }
+        nav a { color: var(--dim); text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 600; transition: 0.3s; }
+        nav a.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
         nav a:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
 
         /* --- MAIN CONTENT --- */
-        main { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; position: relative; }
+        main { margin-left: var(--sidebar-w); flex: 1; padding: 3rem; position: relative; width: 100%; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+        
+        .welcome h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        .welcome p { color: var(--dim); font-size: 0.9rem; margin-top: 5px; }
 
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
-        .welcome h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
-        .welcome p { color: var(--slate-700); font-size: 0.9rem; }
-
-        .btn-connect { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
-
-        /* --- DASHBOARD GRID (WITH LIVE IDs) --- */
+        /* --- STATS --- */
         .stats-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-200); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .stat-card h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--slate-700); letter-spacing: 1px; margin-bottom: 0.5rem; }
-        .stat-card p { font-size: 1.5rem; font-weight: 800; }
+        .stat-card { background: var(--card); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .stat-label { font-size: 0.65rem; text-transform: uppercase; color: var(--dim); letter-spacing: 1px; margin-bottom: 0.8rem; }
+        .stat-val { font-size: 1.8rem; font-weight: 800; color: white; }
 
-        .chart-container { background: white; padding: 2rem; border-radius: 20px; border: 1px solid var(--slate-200); margin-bottom: 2rem; }
+        .chart-container { background: var(--card); padding: 2rem; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 2rem; min-height: 350px; }
 
-        .data-tables { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; }
-        .table-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-200); }
-        .table-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
-
-        /* --- OVERLAY PROMPT --- */
+        /* --- CONNECTION OVERLAY --- */
         #api-overlay {
-            position: absolute;
-            top: 150px; left: 2.5rem; right: 2.5rem; bottom: 0;
-            background: rgba(248, 250, 252, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 24px;
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(15px);
+            z-index: 900; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center;
         }
-        .prompt-box { background: white; padding: 3rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; max-width: 450px; }
-        .prompt-box h2 { margin-bottom: 1rem; }
-        .prompt-box p { color: var(--slate-700); margin-bottom: 2rem; }
+        .prompt-box { background: #0d1117; padding: 3rem; border-radius: 24px; border: 1px solid var(--primary); max-width: 400px; }
 
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; border: 1px solid #ef4444; color: #ef4444; }
+        .status-online { border-color: #10b981; color: #10b981; }
+
+        @media (max-width: 900px) {
+            aside { display: none; }
+            main { margin-left: 0; padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Shield Overlay -->
+    <div id="api-overlay">
+        <div class="prompt-box">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔌</div>
+            <h2 style="color: white; margin-bottom: 1rem;">Connect Shopify</h2>
+            <p style="color: var(--dim); margin-bottom: 2rem;">Unlock your live data stream by adding your Admin API Key in settings.</p>
+            <a href="settings.html" style="background: var(--primary); color: white; padding: 12px 30px; border-radius: 12px; text-decoration: none; font-weight: 800;">GO TO SETTINGS</a>
+        </div>
+    </div>
+
     <aside>
-        <div class="logo">
-            <div class="logo-icon"></div>
-            Starfire
-        </div>
+        <div class="logo"><div class="logo-box"></div> Starfire</div>
         <nav>
-            <a href="dashboard.html" class="active">Dashboard</a>
-            <a href="settings.html">AI Studio</a>
-            <a href="settings.html">Growth Suite</a>
-            <a href="settings.html">Automation</a>
-            <a href="settings.html">Suppliers</a>
-            <a href="settings.html">Settings</a>
+            <a href="dashboard.html" class="active">📊 Dashboard</a>
+            <a href="settings.html">⚡ AI Studio</a>
+            <a href="settings.html">📈 Growth Suite</a>
+            <a href="settings.html" style="margin-top: auto;">⚙️ Settings</a>
         </nav>
-        <div style="margin-top: auto; font-size: 0.8rem; color: #475569;">
-            Founder Access: <span style="color: white;">Enabled</span>
-        </div>
+        <div onclick="userLogout()" style="color: var(--dim); cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 1rem;">Logout →</div>
     </aside>
 
     <main>
-        <!-- API Connection Prompt -->
-        <div id="api-overlay">
-            <div class="prompt-box">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🔌</div>
-                <h2>Connect Shopify</h2>
-                <p>To view real-time sales, inventory, and customer data, you need to link your Shopify API Key in settings.</p>
-                <a href="settings.html" class="btn-connect" style="padding: 1rem 2rem;">Go to Settings</a>
-            </div>
-        </div>
-
         <header>
             <div class="welcome">
-                <h1>Hello, <span id="merchant-name">Merchant</span></h1>
-                <p id="store-url">Loading store data...</p>
+                <h1>Hello, <span id="merchant-name" style="color: var(--primary);">...</span></h1>
+                <p id="store-url">Synchronizing with Cloud...</p>
             </div>
-            <div id="connection-status" style="font-size: 0.8rem; font-weight: bold; color: #ef4444;">
-                ● OFFLINE
-            </div>
+            <div id="status-pill" class="status-pill">OFFLINE</div>
         </header>
 
         <section class="stats-grid">
-            <div class="stat-card">
-                <h4>Total Sales</h4>
-                <p id="stat-sales">$0.00</p>
-            </div>
-            <div class="stat-card">
-                <h4>Inventory</h4>
-                <p id="stat-inv">0 Units</p>
-            </div>
-            <div class="stat-card">
-                <h4>Orders</h4>
-                <p id="stat-orders">0</p>
-            </div>
-            <div class="stat-card">
-                <h4>Customers</h4>
-                <p id="stat-cust">0</p>
-            </div>
+            <div class="stat-card"><div class="stat-label">Total Sales</div><div class="stat-val mono" id="stat-sales">$0.00</div></div>
+            <div class="stat-card"><div class="stat-label">Inventory</div><div class="stat-val mono" id="stat-inv">0 Units</div></div>
+            <div class="stat-card"><div class="stat-label">Orders</div><div class="stat-val mono" id="stat-orders">0</div></div>
+            <div class="stat-card"><div class="stat-label">Customers</div><div class="stat-val mono" id="stat-cust">0</div></div>
         </section>
 
         <div class="chart-container">
-            <h3 style="margin-bottom: 1.5rem;">Sales Analytics</h3>
-            <canvas id="salesChart" height="100"></canvas>
-        </div>
-
-        <div class="data-tables">
-            <div class="table-card">
-                <h3>Product Details</h3>
-                <p id="product-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No products found.</p>
-            </div>
-            <div class="table-card">
-                <h3>Recent Orders</h3>
-                <p id="order-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No recent history.</p>
-            </div>
+            <div class="stat-label" style="margin-bottom: 1.5rem;">Revenue_Performance_Matrix</div>
+            <canvas id="salesChart"></canvas>
         </div>
     </main>
 
     <script>
-        const userData = JSON.parse(localStorage.getItem('starfire_user'));
-        
-        if (!userData) {
-            window.location.href = 'auth.html';
-        } else {
-            document.getElementById('merchant-name').innerText = userData.name || 'Merchant';
-        }
+        // --- SUPABASE CONFIG ---
+        const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function checkShopifyConnection() {
-            const hasKey = localStorage.getItem('shopify_api_key');
-            const shopUrl = localStorage.getItem('shopify_url');
+        async function loadMerchantData() {
+            // 1. Check if user is logged in
+            const { data: { user } } = await _supabase.auth.getUser();
             
-            if (!hasKey || !shopUrl) {
-                document.getElementById('api-overlay').style.display = 'flex';
-                document.getElementById('connection-status').style.color = '#ef4444';
-                document.getElementById('connection-status').innerText = '● ACTION REQUIRED';
-            } else {
-                document.getElementById('api-overlay').style.display = 'none';
-                document.getElementById('connection-status').style.color = '#10b981';
-                document.getElementById('connection-status').innerText = '● LIVE';
-                document.getElementById('store-url').innerText = shopUrl;
-                
-                // FETCH REAL DATA
-                loadLiveShopifyData(shopUrl, hasKey);
+            if (!user) {
+                window.location.replace('auth.html');
+                return;
             }
-        }
 
-        async function loadLiveShopifyData(shop, token) {
-            try {
-                const response = await fetch('/api/shopify/data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ shop_url: shop, access_token: token })
-                });
+            // 2. Fetch profile from Supabase
+            const { data: profile, error } = await _supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    document.getElementById('stat-sales').innerText = `$${data.total_sales}`;
-                    document.getElementById('stat-inv').innerText = `${data.total_inventory} Units`;
-                    document.getElementById('stat-orders').innerText = data.order_count;
-                    document.getElementById('stat-cust').innerText = data.customer_count;
+            if (profile) {
+                document.getElementById('merchant-name').innerText = profile.full_name || "Merchant";
+                
+                // Check for Shopify Connection
+                if (!profile.shopify_token) {
+                    document.getElementById('api-overlay').style.display = 'flex';
+                } else {
+                    // Update UI with real data from Supabase columns
+                    document.getElementById('stat-sales').innerText = `$${profile.total_sales.toLocaleString()}`;
+                    document.getElementById('stat-orders').innerText = profile.total_orders;
+                    document.getElementById('store-url').innerText = profile.shopify_url;
                     
-                    if(data.chart_data) updateChart(data.chart_data);
+                    const pill = document.getElementById('status-pill');
+                    pill.innerText = "● LIVE";
+                    pill.classList.add('status-online');
                 }
-            } catch (err) {
-                console.error("Failed to fetch Shopify data:", err);
             }
         }
 
         function initChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
-            window.myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: ['01', '05', '10', '15', '20', '25', '30'],
                     datasets: [{
-                        label: 'Revenue ($)',
-                        data: [0, 0, 0, 0, 0, 0, 0], 
-                        borderColor: '#2563eb',
-                        tension: 0.4,
+                        data: [200, 450, 300, 800, 600, 1100, 1500],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
                         fill: true,
-                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { 
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false } }
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#444' } },
+                        x: { grid: { display: false }, ticks: { color: '#444' } }
                     }
                 }
             });
         }
 
-        function updateChart(newData) {
-            if (window.myChart) {
-                window.myChart.data.datasets[0].data = newData;
-                window.myChart.update();
-            }
+        async function userLogout() {
+            await _supabase.auth.signOut();
+            window.location.replace('index.html');
         }
 
-        checkShopifyConnection();
+        // Initialize
+        loadMerchantData();
         initChart();
     </script>
 </body>
