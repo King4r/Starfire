@@ -319,11 +319,10 @@
                     submitBtn.disabled = false;
                 }
             } catch (err) {
-                errorMsg.innerText = "Connection error. Is the Python server running?";
-                errorMsg.style.display = "block";
-                submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
-                submitBtn.disabled = false;
-            }
+    console.error("Fetch Error:", err);
+    errorMsg.innerHTML = "<b>SERVER ERROR</b><br>The system is waking up or the database is connecting. Please wait 30 seconds and try again.";
+    errorMsg.style.display = "block";
+}
         };
     </script>
 </body>
