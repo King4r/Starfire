@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starfire Founder | Command</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #020617;
+            --sidebar: #010409;
+            --glass: rgba(15, 23, 42, 0.7);
+            --primary-blue: #3b82f6; /* Electric Blue instead of Neon Green */
+            --accent-blue: #60a5fa;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- AUTH GATE --- */
+        #gate {
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .gate-card { 
+            background: var(--glass); padding: 3rem; border-radius: 24px; 
+            border: 1px solid var(--border); backdrop-filter: blur(20px); text-align: center;
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.1); width: 380px;
+        }
+        .gate-input { 
+            background: rgba(0,0,0,0.4); border: 1px solid var(--primary-blue); 
+            padding: 15px; color: white; border-radius: 12px; width: 100%;
+            text-align: center; font-family: 'JetBrains Mono'; margin-top: 1.5rem; font-size: 1.1rem;
+        }
+
+        /* --- LAYOUT --- */
+        #app-wrapper { display: flex; height: 100vh; width: 100vw; display: none; }
+        
+        aside {
+            width: 260px; background: var(--sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 2rem 1.2rem;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; color: white; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px;}
+        .logo-box { width: 24px; height: 24px; background: var(--primary-blue); border-radius: 4px; }
+
+        nav { flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px;
+            color: var(--text-dim); text-decoration: none; cursor: pointer; margin-bottom: 8px; transition: 0.2s; font-size: 0.9rem; font-weight: 600;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: var(--primary-blue); border-right: 2px solid var(--primary-blue); }
+
+        main { flex: 1; overflow-y: auto; padding: 2.5rem; }
+
+        /* --- DASHBOARD COMPONENTS --- */
+        .stat-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .stat-val { font-size: 1.8rem; font-weight: 800; color: white; }
+
+        .chart-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .chart-card { min-height: 350px; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; color: var(--text-dim); font-size: 0.7rem; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        .mono-td { font-family: 'JetBrains Mono'; color: var(--primary-blue); }
+
+        .search-bar { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px 15px; border-radius: 10px; color: white; width: 100%; max-width: 350px; margin-bottom: 1.5rem; outline: none; }
+        .form-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; margin-bottom: 1rem; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+
+        @media (max-width: 768px) {
+            aside { display: none; }
+            #app-wrapper { flex-direction: column; }
+            main { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Security Gate -->
+    <div id="gate">
+        <div class="gate-card">
+            <div class="logo-box" style="margin: 0 auto 1.5rem;"></div>
+            <h2 class="mono">FOUNDER_AUTH</h2>
+            <input type="password" id="gate-pass" class="gate-input" placeholder="PASSCODE" onkeyup="if(event.key==='Enter') verifyGate()">
+            <button class="nav-item active" style="width: 100%; margin-top: 1.5rem; justify-content: center; font-weight: 800; background: var(--primary-blue); color: white;" onclick="verifyGate()">AUTHORIZE</button>
+            <p id="gate-err" style="color: #ef4444; font-size: 0.7rem; margin-top: 10px; display: none;">INVALID KEY</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="wrapper" id="app-wrapper">
+        <aside>
+            <div class="logo"><div class="logo-box"></div> <span>STARFIRE OS</span></div>
+            <nav>
+                <div class="nav-item active" id="nav-dash" onclick="showSection('dash')">📊 Dashboard</div>
+                <div class="nav-item" id="nav-subs" onclick="showSection('subs')">👥 Subscribers</div>
+                <div class="nav-item" id="nav-camp" onclick="showSection('camp')">✉️ Campaigns</div>
+            </nav>
+            <div class="nav-item" style="color: #ef4444; margin-top: auto;" onclick="location.reload()">🔒 Lock</div>
+        </aside>
+
+        <main>
+            <section id="sect-dash" class="section active">
+                <header style="margin-bottom: 2.5rem;">
+                    <h1 class="mono">GLOBAL_INTELLIGENCE</h1>
+                    <p id="sync-clock" style="color: var(--primary-blue); font-size: 0.7rem; font-family: 'JetBrains Mono'; text-transform: uppercase;">Syncing...</p>
+                </header>
+
+                <div class="stat-grid">
+                    <div class="card"><div class="stat-label">Merchants</div><div class="stat-val" id="stat-users">0</div></div>
+                    <div class="card"><div class="stat-label">Orders</div><div class="stat-val" id="stat-orders">0</div></div>
+                    <div class="card"><div class="stat-label">Revenue</div><div class="stat-val" id="stat-profits">$0</div></div>
+                    <div class="card"><div class="stat-label">Status</div><div class="stat-val" style="color: var(--accent-blue); font-size: 1.2rem;">ONLINE</div></div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="card chart-card"><canvas id="growthChart"></canvas></div>
+                    <div class="card chart-card"><canvas id="openRateChart"></canvas></div>
+                </div>
+            </section>
+
+            <section id="sect-subs" class="section">
+                <h1 class="mono">MERCHANT_DATABASE</h1>
+                <div class="card" style="margin-top: 2rem;">
+                    <input type="text" id="userSearch" class="search-bar" placeholder="Filter merchants..." onkeyup="filterTable()">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Email</th><th>Integrations</th><th>Status</th><th>Sales</th></tr>
+                        </thead>
+                        <tbody id="user-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let gChart = null, tChart = null;
+
+        async function verifyGate() {
+            const pass = document.getElementById('gate-pass').value;
+            const res = await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ password: pass })
+            });
+            if(res.ok) {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('app-wrapper').style.display = 'flex';
+                fetchPlatformData();
+            } else { document.getElementById('gate-err').style.display = 'block'; }
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('sect-' + id).classList.add('active');
+            document.getElementById('nav-' + id).classList.add('active');
+        }
+
+        async function fetchPlatformData() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                
+                document.getElementById('stat-users').innerText = data.global_users;
+                document.getElementById('stat-orders').innerText = data.global_orders;
+                document.getElementById('stat-profits').innerText = `$${data.global_sales}`;
+                document.getElementById('sync-clock').innerText = `SYSTEM_TIME: ${data.system_time} // STABLE`;
+
+                renderCharts(data.growth_chart, data.traffic_chart);
+
+                const tbody = document.getElementById('user-table-body');
+                tbody.innerHTML = '';
+                data.users.forEach(u => {
+                    tbody.innerHTML += `<tr>
+                        <td class="mono-td">${u.id}</td>
+                        <td>${u.email}</td>
+                        <td><span class="badge">${u.is_ready ? 'API LINKED' : 'PENDING'}</span></td>
+                        <td>ONLINE</td>
+                        <td class="mono-td">$${u.total_sales || 0}</td>
+                    </tr>`;
+                });
+            } catch (e) { console.error("Sync Error", e); }
+        }
+
+        function renderCharts(growth, traffic) {
+            const ctx1 = document.getElementById('growthChart').getContext('2d');
+            if(gChart) gChart.destroy();
+            gChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: growth.labels,
+                    datasets: [{
+                        label: 'Signups',
+                        data: growth.values,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            const ctx2 = document.getElementById('openRateChart').getContext('2d');
+            if(tChart) tChart.destroy();
+            tChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: traffic.labels,
+                    datasets: [{
+                        label: 'Traffic',
+                        data: traffic.values,
+                        backgroundColor: '#60a5fa'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function filterTable() {
+            const val = document.getElementById("userSearch").value.toUpperCase();
+            const rows = document.getElementById("user-table-body").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                const txt = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = txt.toUpperCase().indexOf(val) > -1 ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>

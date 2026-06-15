@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starfire | Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-success: #10b981;
+            --danger: #ef4444;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-700: #334155;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--slate-50); color: var(--slate-900); display: flex; }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--slate-900);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;}
+        .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; }
+        
+        nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+        nav a { color: #94a3b8; text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 500; transition: 0.3s; }
+        nav a:hover { background: rgba(255,255,255,0.05); color: white; }
+        nav a.active { background: var(--primary); color: white; }
+
+        .logout-btn {
+            margin-top: auto;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* --- MAIN CONTENT --- */
+        main { margin-left: var(--sidebar-width); flex: 1; padding: 3rem; max-width: 900px; }
+        header { margin-bottom: 3rem; }
+        header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
+
+        .settings-card {
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid var(--slate-200);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .settings-card h3 { margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid var(--slate-100); padding-bottom: 1rem; }
+
+        .form-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-row { margin-bottom: 1.5rem; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--slate-700); }
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .toggle-btn {
+            position: absolute; right: 10px; background: none; border: none; 
+            color: var(--primary); font-size: 0.75rem; font-weight: 700; cursor: pointer;
+        }
+
+        .save-area { display: flex; align-items: center; gap: 1rem; }
+        .btn-save {
+            background: var(--slate-900);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-save.success { background: var(--primary-success); }
+
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            Starfire
+        </div>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="#">AI Studio</a>
+            <a href="#">Growth Suite</a>
+            <a href="#" class="active">Settings</a>
+        </nav>
+        <div class="logout-btn" onclick="logout()">
+            <span>🚪</span> Logout
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <h1>System Settings</h1>
+            <p>Configure your store environment and secure integrations.</p>
+        </header>
+
+        <!-- General Settings -->
+        <section class="settings-card">
+            <h3>General Store Config</h3>
+            
+            <div class="form-row">
+                <label>Shopify Store URL</label>
+                <!-- autocomplete="off" stops browser from guessing this is a username -->
+                <input type="text" id="store-url" autocomplete="off" placeholder="your-store.myshopify.com">
+            </div>
+
+            <div class="form-row">
+                <label>Admin API Access Token</label>
+                <div class="input-wrapper">
+                    <!-- autocomplete="new-password" stops the auto-fill of your LOGIN password -->
+                    <input type="password" id="api-token" autocomplete="new-password" name="shopify_token_secure" placeholder="shpat_xxxxxxxxxxxxxxxx">
+                    <button class="toggle-btn" onclick="toggleToken()">SHOW</button>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label>Store Currency</label>
+                    <select id="store-currency">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="CAD">CAD ($)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Store Geography (Region)</label>
+                    <select id="store-region">
+                        <option value="US">North America (US/CA)</option>
+                        <option value="EU">European Union</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="AS">Asia Pacific</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Integration Settings -->
+        <section class="settings-card">
+            <h3>Integrations</h3>
+            <div class="form-row">
+                <label>SMTP Provider</label>
+                <select id="smtp-provider">
+                    <option value="resend">Resend (High Performance)</option>
+                    <option value="sendgrid">SendGrid</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Integration API Key</label>
+                <input type="password" id="smtp-key" autocomplete="new-password" placeholder="re_xxxxxxxxxxxx">
+            </div>
+        </section>
+
+        <div class="save-area">
+            <button class="btn-save" id="save-btn" onclick="saveSettings()">Save Changes</button>
+            <span id="save-msg" style="display: none; font-size: 0.85rem; font-weight: 600; color: var(--primary-success);">Settings applied successfully!</span>
+        </div>
+    </main>
+
+    <script>
+        // Load settings
+        window.onload = () => {
+            document.getElementById('store-url').value = localStorage.getItem('shopify_url') || '';
+            document.getElementById('api-token').value = localStorage.getItem('shopify_api_key') || '';
+            document.getElementById('store-currency').value = localStorage.getItem('store_currency') || 'USD';
+            document.getElementById('store-region').value = localStorage.getItem('store_region') || 'US';
+        };
+
+        function toggleToken() {
+            const input = document.getElementById('api-token');
+            const btn = document.querySelector('.toggle-btn');
+            input.type = input.type === "password" ? "text" : "password";
+            btn.innerText = input.type === "password" ? "SHOW" : "HIDE";
+        }
+
+        function saveSettings() {
+            const btn = document.getElementById('save-btn');
+            const msg = document.getElementById('save-msg');
+
+            // Persist to LocalStorage
+            localStorage.setItem('shopify_url', document.getElementById('store-url').value);
+            localStorage.setItem('shopify_api_key', document.getElementById('api-token').value);
+            localStorage.setItem('store_currency', document.getElementById('store-currency').value);
+            localStorage.setItem('store_region', document.getElementById('store-region').value);
+
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.classList.add('success');
+                btn.innerText = "Saved";
+                msg.style.display = "inline";
+
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btn.innerText = "Save Changes";
+                    btn.disabled = false;
+                    msg.style.display = "none";
+                }, 2000);
+            }, 600);
+        }
+
+        function logout() {
+            // Clear specific user session data but keep settings if you want, 
+            // OR clear everything for full security:
+            localStorage.removeItem('starfire_user');
+            window.location.href = 'auth.html';
+        }
+    </script>
+</body>
+</html>

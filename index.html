@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starfire | Shopify Supercharged</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --slate-900: #0f172a;
+            --slate-600: #475569;
+            --slate-400: #94a3b8;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+            --max-width: 1100px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--white);
+            color: var(--slate-900);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- LAYOUT UTILITIES --- */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .text-center { text-align: center; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        nav .container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-dark {
+            background: var(--slate-900);
+            color: white;
+        }
+
+        /* --- HERO SECTION --- */
+        header {
+            padding: 160px 0 80px;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-p {
+            font-size: 1.25rem;
+            color: var(--slate-600);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .video-wrapper {
+            background: var(--slate-900);
+            border-radius: 32px;
+            padding: 10px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 22px;
+            display: block;
+        }
+
+        /* --- ROADMAP SECTION --- */
+        .roadmap {
+            padding: 100px 0;
+            background: var(--slate-50);
+            position: relative;
+        }
+
+        .roadmap-header { margin-bottom: 80px; }
+        .roadmap-header h2 { font-size: 2.5rem; font-weight: 800; }
+        .roadmap-tag {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .roadmap-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* The Animated Line */
+        .roadmap-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .roadmap-progress {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            width: 2px;
+            background: var(--primary);
+            height: 0%; /* Adjusted by JS */
+            transition: height 0.1s linear;
+        }
+
+        /* Step Content */
+        .step {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 120px;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .step-info { flex: 1; }
+        .step-info span { font-weight: 700; color: var(--primary); font-style: italic; }
+        .step-info h3 { font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0 1rem; }
+        .step-info p { color: var(--slate-600); }
+
+        .step-visual {
+            flex: 1;
+            background: white;
+            border: 2px dashed var(--slate-400);
+            border-radius: 24px;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-400);
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .step-visual img { width: 100%; height: auto; display: block; }
+
+        /* Animation Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Desktop Adjustments for Roadmap */
+        @media (min-width: 768px) {
+            .roadmap-line, .roadmap-progress { left: 50%; transform: translateX(-50%); }
+            .step { flex-direction: row; padding-left: 0; align-items: center; }
+            .step:nth-child(even) { flex-direction: row-reverse; }
+            .step-info { text-align: right; padding-right: 60px; }
+            .step:nth-child(even) .step-info { text-align: left; padding-left: 60px; padding-right: 0; }
+            .step-visual { max-width: 450px; }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 80px 0;
+            border-top: 1px solid var(--slate-100);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-box">S</div>
+                <span>Starfire</span>
+            </div>
+            <!-- REDIRECT LINK -->
+            <a href="auth.html" class="btn btn-dark" style="padding: 0.6rem 1.5rem; font-size: 0.8rem;">GET STARTED</a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="container text-center">
+            <h1>Your Shopify Store,<br> <span class="text-gradient">Supercharged by AI.</span></h1>
+            <p class="hero-p">Stop manually editing photos, hunting for trends, and juggling ten tools. Starfire is the operating system that puts your e-commerce growth on autopilot.</p>
+            
+            <div class="video-wrapper reveal">
+                <!-- ACTION: Replace your-video.mp4 -->
+                <video autoplay muted loop playsinline>
+                    <source src="your-video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <!-- REDIRECT LINK -->
+            <a href="auth.html" class="btn btn-primary">IGNITE GROWTH NOW</a>
+        </div>
+    </header>
+
+    <section class="roadmap">
+        <div class="container">
+            <div class="roadmap-header text-center">
+                <span class="roadmap-tag">The Process</span>
+                <h2>How Starfire Works</h2>
+            </div>
+
+            <div class="roadmap-container">
+                <div class="roadmap-line"></div>
+                <div id="progress" class="roadmap-progress"></div>
+
+                <!-- Phase 01 -->
+                <div class="step reveal">
+                    <div class="step-info">
+                        <span>Phase 01</span>
+                        <h3>The AI Studio</h3>
+                        <p>Upload your raw product shots and let our engine handle the rest. We swap boring backgrounds for professional lifestyle environments instantly.</p>
+                    </div>
+                    <div class="step-visual">
+                        <!-- ACTION: Replace image -->
+                        <img src="ai-studio.jpg" alt="AI Studio">
+                        <span>[UPLOAD AI STUDIO IMAGE]</span>
+                    </div>
+                </div>
+
+                <!-- Phase 02 -->
+                <div class="step reveal">
+                    <div class="step-info">
+                        <span>Phase 02</span>
+                        <h3>The Trend Scanner</h3>
+                        <p>Our intelligent crawler scans TikTok and niche marketplaces in real-time to identify winning products before they explode.</p>
+                    </div>
+                    <div class="step-visual">
+                        <!-- ACTION: Replace image -->
+                        <img src="trend-scanner.jpg" alt="Trend Scanner">
+                        <span>[UPLOAD TREND IMAGE]</span>
+                    </div>
+                </div>
+
+                <!-- Phase 03 -->
+                <div class="step reveal">
+                    <div class="step-info">
+                        <span>Phase 03</span>
+                        <h3>The Growth Hub</h3>
+                        <p>Efficiency is profit. Automatically schedule social posts and deploy high-converting email sequences in a single click.</p>
+                    </div>
+                    <div class="step-visual">
+                        <!-- ACTION: Replace image -->
+                        <img src="growth-hub.jpg" alt="Growth Hub">
+                        <span>[UPLOAD GROWTH IMAGE]</span>
+                    </div>
+                </div>
+
+                <!-- Phase 04 -->
+                <div class="step reveal">
+                    <div class="step-info">
+                        <span>Phase 04</span>
+                        <h3>The Command Center</h3>
+                        <p>Manage your entire business empire from a single, high-contrast dashboard with the "Founder's Eye" view.</p>
+                    </div>
+                    <div class="step-visual">
+                        <!-- ACTION: Replace image -->
+                        <img src="command-center.jpg" alt="Command Center">
+                        <span>[UPLOAD ADMIN IMAGE]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Ready to build your empire?</h2>
+            <!-- REDIRECT LINK -->
+            <a href="auth.html" class="btn btn-primary">GET STARFIRE NOW</a>
+            <p style="margin-top: 3rem; color: var(--slate-400); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px;">© 2024 STARFIRE TECHNOLOGIES</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Reveal Elements on Scroll
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 2. Roadmap Line Growth
+        window.addEventListener('scroll', () => {
+            const progress = document.getElementById('progress');
+            const roadmap = document.querySelector('.roadmap-container');
+            const roadmapRect = roadmap.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Calculate how much of the roadmap is visible
+            let scrollDist = (windowHeight / 1.5) - roadmapRect.top;
+            let progressHeight = (scrollDist / roadmapRect.height) * 100;
+
+            // Constrain between 0 and 100%
+            progress.style.height = Math.min(Math.max(progressHeight, 0), 100) + "%";
+        });
+    </script>
+</body>
+</html>
