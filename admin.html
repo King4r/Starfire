@@ -3,69 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starfire Founder | Direct Cloud</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Starfire | Founder OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg: #050505; --card: #0a0a0a; --blue: #3b82f6; --border: #1a1a1a; --text: #f8fafc; --dim: #666666; }
+        :root {
+            --primary: #2563eb;
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --dim: #94a3b8;
+            --sidebar-w: 260px;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
         .mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Auth Gate */
-        #gate { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .gate-card { background: var(--card); padding: 3rem; border: 1px solid var(--border); text-align: center; width: 350px; }
-        .gate-input { background: #000; border: 1px solid var(--blue); padding: 12px; color: var(--blue); width: 100%; text-align: center; font-family: 'JetBrains Mono'; outline: none; margin-top: 1.5rem; }
+        /* --- AUTH GATE --- */
+        #gate {
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .gate-card { 
+            background: #0d1117; padding: 3rem; border: 1px solid var(--primary); 
+            border-radius: 24px; text-align: center; width: 350px;
+            box-shadow: 0 0 50px rgba(37, 99, 235, 0.1);
+        }
+        .gate-input { 
+            background: #000; border: 1px solid var(--border); padding: 12px; 
+            color: var(--primary); width: 100%; text-align: center; font-family: 'JetBrains Mono';
+            outline: none; margin-top: 1.5rem; border-radius: 12px;
+        }
 
-        /* Dashboard */
-        #admin-app { display: none; padding: 3rem; max-width: 1200px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem; }
-        .stat-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; }
-        .label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); margin-bottom: 0.5rem; }
-        .val { font-size: 2rem; font-weight: 800; color: white; }
+        /* --- SIDEBAR --- */
+        aside {
+            width: var(--sidebar-w); background: #010409; color: white;
+            padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
+            border-right: 1px solid var(--border); z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .logo-box { width: 30px; height: 30px; background: var(--primary); border-radius: 8px; }
 
-        .chart-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
-        .chart-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; height: 300px; }
+        nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+        .nav-item { color: var(--dim); text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); border-right: 3px solid var(--primary); }
 
-        table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); }
-        th { text-align: left; padding: 1rem; color: var(--dim); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: #cbd5e1; }
+        /* --- MAIN --- */
+        main { margin-left: var(--sidebar-w); flex: 1; padding: 3rem; display: none; }
+        header { margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-end; }
+
+        .stat-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 20px; backdrop-filter: blur(10px); }
+        .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); margin-bottom: 0.8rem; }
+        .val { font-size: 2.2rem; font-weight: 800; color: white; }
+
+        .chart-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+        .chart-card { background: var(--card); border: 1px solid var(--border); padding: 2rem; border-radius: 24px; height: 350px; }
+
+        /* --- DATA TABLE --- */
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1.2rem; background: rgba(255,255,255,0.02); color: var(--dim); font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 1.2rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+
+        @media (max-width: 900px) {
+            aside { display: none; }
+            main { margin-left: 0; padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Auth Gate -->
     <div id="gate">
         <div class="gate-card">
-            <h2 class="mono">SYSTEM_FOUNDER_AUTH</h2>
-            <input type="password" id="pass" class="gate-input" placeholder="ACCESS_CODE" onkeyup="if(event.key==='Enter') auth()">
-            <button onclick="auth()" style="margin-top: 1rem; background: var(--blue); color: white; border: none; padding: 12px; font-weight: 800; cursor: pointer; width: 100%;">AUTHORIZE</button>
+            <h2 class="mono" style="font-size: 1rem;">FOUNDER_TERMINAL</h2>
+            <input type="password" id="pass" class="gate-input" placeholder="PASSCODE" onkeyup="if(event.key==='Enter') auth()">
+            <button onclick="auth()" style="width: 100%; margin-top: 1.5rem; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;">CONNECT</button>
         </div>
     </div>
 
-    <div id="admin-app">
+    <!-- Main View -->
+    <aside>
+        <div class="logo"><div class="logo-box"></div> Starfire</div>
+        <nav>
+            <div class="nav-item active">📊 Platform Stats</div>
+            <div class="nav-item">✉️ Campaigns</div>
+            <div class="nav-item">⚙️ Settings</div>
+        </nav>
+        <div onclick="location.reload()" style="margin-top: auto; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 0.8rem;">🔒 LOCK TERMINAL</div>
+    </aside>
+
+    <main id="main-view">
         <header>
-            <h1 class="mono">STARFIRE_FOUNDER_OS_V4</h1>
-            <p id="sync-time" class="mono" style="color: var(--blue); font-size: 0.7rem;">STATUS: CLOUD_DIRECT_ACTIVE</p>
+            <div>
+                <h1 style="font-size: 2rem; font-weight: 800;">Global Intelligence</h1>
+                <p id="sync-time" class="mono" style="color: var(--primary); font-size: 0.7rem; margin-top: 5px;">STREAM: ACTIVE</p>
+            </div>
+            <div class="mono" style="font-size: 0.7rem; color: var(--dim);">V_4.2_FOUNDER</div>
         </header>
 
         <div class="stat-grid">
-            <div class="stat-card"><div class="label">Merchants</div><div class="val mono" id="stat-users">0</div></div>
-            <div class="stat-card"><div class="label">Platform Sales</div><div class="val mono" id="stat-sales">$0.00</div></div>
-            <div class="stat-card"><div class="label">Total Orders</div><div class="val mono" id="stat-orders">0</div></div>
+            <div class="stat-card"><div class="label">Platform Merchants</div><div class="val mono" id="stat-merchants">0</div></div>
+            <div class="stat-card"><div class="label">Gross Sales Vol</div><div class="val mono" id="stat-sales">$0.00</div></div>
+            <div class="stat-card"><div class="label">Accumulated Orders</div><div class="val mono" id="stat-orders">0</div></div>
         </div>
 
         <div class="chart-grid">
-            <div class="chart-card"><canvas id="growthChart"></canvas></div>
-            <div class="chart-card"><canvas id="trafficChart"></canvas></div>
+            <div class="chart-card"><div class="label">Signup_Velocity</div><canvas id="growthChart"></canvas></div>
+            <div class="chart-card"><div class="label">Traffic_Heartbeat</div><canvas id="trafficChart"></canvas></div>
         </div>
 
-        <table>
-            <thead><tr><th>Merchant</th><th>Store_URL</th><th>Integrations</th><th>Revenue</th></tr></thead>
-            <tbody id="user-rows"></tbody>
-        </table>
-    </div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>Merchant</th><th>Store_URL</th><th>Status</th><th>Revenue</th></tr></thead>
+                <tbody id="merchant-rows"></tbody>
+            </table>
+        </div>
+    </main>
 
     <script>
         const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
@@ -76,37 +134,37 @@
 
         async function auth() {
             const pass = document.getElementById('pass').value;
-            // CALL SUPABASE RPC DIRECTLY
-            const { data, error } = await _supabase.rpc('get_admin_stats', { admin_key: pass });
+            // CALL SUPABASE DIRECTLY
+            const { data, error } = await _supabase.rpc('get_starfire_intelligence', { founder_key: pass });
 
             if (error) {
                 alert("ACCESS_DENIED");
-                console.error(error);
             } else {
                 document.getElementById('gate').style.display = 'none';
-                document.getElementById('admin-app').style.display = 'block';
-                populateDashboard(data);
+                document.getElementById('main-view').style.display = 'block';
+                populate(data);
             }
         }
 
-        function populateDashboard(data) {
-            document.getElementById('stat-users').innerText = data.global_users;
+        function populate(data) {
+            document.getElementById('stat-merchants').innerText = data.total_merchants;
             document.getElementById('stat-sales').innerText = `$${data.global_sales.toLocaleString()}`;
             document.getElementById('stat-orders').innerText = data.global_orders;
+            document.getElementById('sync-time').innerText = `STREAM: LIVE // ${new Date().toLocaleTimeString()}`;
 
-            const tbody = document.getElementById('user-rows');
+            const tbody = document.getElementById('merchant-rows');
             tbody.innerHTML = '';
-            data.users.forEach(u => {
+            data.merchants.forEach(m => {
                 tbody.innerHTML += `<tr>
-                    <td class="mono" style="color: white;">${u.full_name}<br><span style="font-size:0.7rem;color:var(--dim)">${u.email}</span></td>
-                    <td style="color: var(--blue)">${u.shopify_url || '---'}</td>
-                    <td>${u.is_ready ? '🟢 CONNECTED' : '🟡 PENDING'}</td>
-                    <td class="mono">$${u.total_sales.toLocaleString()}</td>
+                    <td class="mono"><strong>${m.full_name}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${m.email}</span></td>
+                    <td style="color:var(--primary);font-size:0.8rem;">${m.shopify_url || '---'}</td>
+                    <td style="font-size:0.7rem;">${m.is_active ? '🟢 ACTIVE' : '🟡 PENDING'}</td>
+                    <td class="mono">$${m.total_sales.toLocaleString()}</td>
                 </tr>`;
             });
 
-            renderChart('growthChart', data.growth_chart, '#3b82f6', 'line');
-            renderChart('trafficChart', data.traffic_chart, '#ffffff', 'bar');
+            renderChart('growthChart', data.growth_data, '#2563eb', 'line');
+            renderChart('trafficChart', data.traffic_data, '#ffffff', 'bar');
         }
 
         function renderChart(id, chartData, color, type) {
@@ -116,13 +174,21 @@
                 type: type,
                 data: {
                     labels: chartData.labels,
-                    datasets: [{ data: chartData.values, borderColor: color, backgroundColor: color + '11', borderWidth: 2, tension: 0.4, fill: true }]
+                    datasets: [{
+                        data: chartData.values, borderColor: color, backgroundColor: color + '11',
+                        borderWidth: 2, tension: 0.4, fill: true
+                    }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-                    scales: { x: { grid: { display: false }, ticks: { color: '#333' } }, y: { grid: { color: '#111' }, ticks: { color: '#333' } } }
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: '#334155', font: { size: 9 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#334155', font: { size: 9 } } }
+                    }
                 }
             });
         }
     </script>
 </body>
-                                                                                   </html>
+</html>
