@@ -3,142 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starfire | Access Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Starfire | Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --primary: #3b82f6; --primary-dark: #2563eb;
-            --bg-page: #020617; --bg-card: #ffffff;
-            --text-main: #0f172a; --text-muted: #64748b;
-            --border: #e2e8f0; --radius: 16px;
+            --bg: #050505;
+            --card: #0a0a0a;
+            --blue: #3b82f6;
+            --border: #1a1a1a;
+            --text: #ffffff;
+            --dim: #666666;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif; background-color: var(--bg-page);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; padding: 1.5rem;
+            min-height: 100vh; padding: 20px;
         }
-        .auth-container {
-            background: var(--bg-card); width: 100%; max-width: 400px;
-            padding: 2.5rem; border-radius: 24px; text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+        .auth-card {
+            background: var(--card);
+            width: 100%; max-width: 380px;
+            padding: 3rem 2.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
         }
-        .logo-mark {
-            width: 40px; height: 40px; background: var(--primary); color: white;
-            border-radius: 10px; display: inline-flex; align-items: center;
-            justify-content: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 1.5rem;
-        }
-        h2 { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; }
-        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
-        .field { text-align: left; margin-bottom: 1.25rem; }
-        label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; }
+
+        .logo { font-weight: 800; font-size: 1.2rem; margin-bottom: 2rem; letter-spacing: -1px; }
+        .logo span { color: var(--blue); }
+
+        h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        form { text-align: left; }
+        .group { margin-bottom: 1.25rem; }
+        label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--dim); margin-bottom: 0.5rem; text-transform: uppercase; }
+        
         input {
-            width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border);
-            border-radius: var(--radius); font-size: 1rem; outline: none; transition: 0.2s;
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
+            color: white; outline: none; font-size: 0.9rem; transition: 0.2s;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-        .btn-submit {
-            width: 100%; padding: 1rem; background: var(--text-main); color: white;
-            border: none; border-radius: var(--radius); font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: 0.2s; margin-top: 1rem;
+        input:focus { border-color: var(--blue); }
+
+        .btn-main {
+            width: 100%; padding: 14px; background: var(--blue); color: white;
+            border: none; font-weight: 800; cursor: pointer; text-transform: uppercase;
+            font-size: 0.8rem; letter-spacing: 1px; margin-top: 1rem;
         }
-        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        #error-ui {
-            background: #fff1f2; color: #e11d48; padding: 1rem; border-radius: 12px;
-            font-size: 0.8rem; font-weight: 600; margin-top: 1rem; display: none;
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .toggle-area { margin-top: 1.5rem; font-size: 0.8rem; color: var(--dim); }
+        .toggle-area span { color: var(--blue); cursor: pointer; font-weight: 800; }
+
+        #err {
+            margin-top: 1rem; padding: 10px; border: 1px solid #ef4444;
+            color: #ef4444; font-size: 0.75rem; display: none; background: rgba(239, 68, 68, 0.05);
         }
+
         .hidden { display: none; }
-        .toggle-link { margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
-        .link-accent { color: var(--primary); font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="auth-container">
-        <div class="logo-mark">S</div>
-        <h2 id="heading">Welcome Back</h2>
-        <p class="subtitle" id="sub-heading">Access your Starfire dashboard.</p>
+    <div class="auth-card">
+        <div class="logo">STARFIRE <span>//</span> ACCESS</div>
+        <h2 id="title">User Login</h2>
 
-        <form id="auth-form">
-            <div class="field hidden" id="name-field">
+        <form id="auth-form" onsubmit="handleAuth(event)">
+            <div id="name-group" class="group hidden">
                 <label>Merchant Name</label>
-                <input type="text" id="user-name" placeholder="John Doe">
+                <input type="text" id="full-name" placeholder="E.G. JOHN DOE">
             </div>
-            <div class="field">
+
+            <div class="group">
                 <label>Email Address</label>
-                <input type="email" id="user-email" placeholder="name@store.com" required>
+                <input type="email" id="email" required placeholder="NAME@STORE.COM">
             </div>
-            <div class="field">
-                <label>Secure Password</label>
-                <input type="password" id="user-pass" placeholder="••••••••" required>
+
+            <div class="group">
+                <label>System Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
             </div>
-            <button type="submit" class="btn-submit" id="btn-text">Sign In</button>
+
+            <button type="submit" id="submit-btn" class="btn-main">Authorize</button>
         </form>
 
-        <div id="error-ui"></div>
+        <div id="err"></div>
 
-        <div class="toggle-link">
-            <span id="toggle-label">First time here?</span>
-            <span class="link-accent" id="toggle-action">Create Account</span>
+        <div class="toggle-area">
+            <p id="toggle-msg">New to the system? <span onclick="toggleMode()">Create Account</span></p>
         </div>
     </div>
 
     <script>
-        // --- INJECTED CLOUD KEYS ---
+        // --- INITIALIZE SUPABASE ---
         const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const form = document.getElementById('auth-form');
-        const toggleAction = document.getElementById('toggle-action');
-        const nameField = document.getElementById('name-field');
-        const btnText = document.getElementById('btn-text');
-        const errorUi = document.getElementById('error-ui');
+        let isLogin = true;
 
-        let isLoginMode = true;
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('name-group').classList.toggle('hidden');
+            document.getElementById('title').innerText = isLogin ? "User Login" : "Create Account";
+            document.getElementById('submit-btn').innerText = isLogin ? "Authorize" : "Initialize";
+            document.getElementById('toggle-msg').innerHTML = isLogin ? 
+                'New to the system? <span onclick="toggleMode()">Create Account</span>' : 
+                'Already verified? <span onclick="toggleMode()">Sign In</span>';
+            document.getElementById('err').style.display = 'none';
+        }
 
-        toggleAction.onclick = () => {
-            isLoginMode = !isLoginMode;
-            nameField.classList.toggle('hidden');
-            document.getElementById('heading').innerText = isLoginMode ? "Welcome Back" : "Start Growing";
-            btnText.innerText = isLoginMode ? "Sign In" : "Initialize Account";
-            toggleAction.innerText = isLoginMode ? "Create Account" : "Sign In";
-            errorUi.style.display = "none";
-        };
+        async function handleAuth(e) {
+            e.preventDefault(); // CRITICAL: Stops the page from reloading
+            
+            const errDiv = document.getElementById('err');
+            const btn = document.getElementById('submit-btn');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('full-name').value;
 
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            errorUi.style.display = "none";
-            btnText.innerText = "Authenticating...";
-
-            const email = document.getElementById('user-email').value;
-            const password = document.getElementById('user-pass').value;
-            const fullName = document.getElementById('user-name').value;
+            errDiv.style.display = 'none';
+            btn.disabled = true;
+            btn.innerText = "Processing...";
 
             try {
-                if (isLoginMode) {
+                if (isLogin) {
+                    // --- LOGIN LOGIC ---
                     const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
+                    
+                    // Session established, move to dashboard
                     window.location.replace('/dashboard.html');
                 } else {
-                    const { data: authData, error: authError } = await _supabase.auth.signUp({ 
-                        email, password, options: { data: { full_name: fullName } }
+                    // --- SIGNUP LOGIC ---
+                    const { data: authData, error: authError } = await _supabase.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { display_name: fullName } }
                     });
+
                     if (authError) throw authError;
 
                     if (authData.user) {
-                        // Create the profile entry automatically
-                        await _supabase.from('profiles').insert([{ id: authData.user.id, email, full_name: fullName }]);
+                        // Create their profile entry immediately
+                        const { error: dbError } = await _supabase
+                            .from('profiles')
+                            .insert([{ id: authData.user.id, email: email, full_name: fullName }]);
+                        
+                        if (dbError) throw dbError;
+                        
+                        // Move to dashboard
                         window.location.replace('/dashboard.html');
                     }
                 }
-            } catch (err) {
-                errorUi.innerText = err.message;
-                errorUi.style.display = "block";
-                btnText.innerText = isLoginMode ? "Sign In" : "Initialize Account";
+            } catch (error) {
+                console.error("Auth Failure:", error.message);
+                errDiv.innerText = "SYSTEM_ERROR: " + error.message.toUpperCase();
+                errDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerText = isLogin ? "Authorize" : "Initialize";
             }
-        };
+        }
     </script>
 </body>
 </html>
