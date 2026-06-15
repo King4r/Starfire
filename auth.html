@@ -3,64 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starfire | Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Starfire | Access Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* --- YOUR STARFIRE CSS VARIABLES --- */
         :root {
-            --bg: #050505;
-            --card: #0a0a0a;
-            --blue: #3b82f6;
-            --border: #1a1a1a;
-            --text: #ffffff;
-            --dim: #666666;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-400: #94a3b8;
+            --slate-600: #475569;
+            --slate-900: #0f172a;
+            --white: #ffffff;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; padding: 20px;
+            font-family: 'Inter', sans-serif; background-color: var(--slate-50); color: var(--slate-900);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
         }
 
         .auth-card {
-            background: var(--card);
-            width: 100%; max-width: 380px;
-            padding: 3rem 2.5rem;
-            border: 1px solid var(--border);
-            text-align: center;
+            background: var(--white); width: 100%; max-width: 420px;
+            padding: 2.5rem; border-radius: 24px; box-shadow: var(--shadow);
+            text-align: center; border: 1px solid var(--slate-100);
         }
 
-        .logo { font-weight: 800; font-size: 1.2rem; margin-bottom: 2rem; letter-spacing: -1px; }
-        .logo span { color: var(--blue); }
+        .logo-area {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 2rem; text-decoration: none; color: var(--slate-900);
+        }
 
-        h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; }
+        .logo-icon {
+            width: 40px; height: 40px; background: var(--primary);
+            color: white; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem;
+        }
 
-        form { text-align: left; }
-        .group { margin-bottom: 1.25rem; }
-        label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--dim); margin-bottom: 0.5rem; text-transform: uppercase; }
-        
+        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
+        h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--slate-600); font-size: 0.95rem; margin-bottom: 2rem; }
+
+        .form-group { text-align: left; margin-bottom: 1.25rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--slate-900); }
         input {
-            width: 100%; padding: 12px; background: #000; border: 1px solid var(--border);
-            color: white; outline: none; font-size: 0.9rem; transition: 0.2s;
+            width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--slate-200);
+            border-radius: 12px; font-size: 1rem; transition: all 0.2s ease;
         }
-        input:focus { border-color: var(--blue); }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        .btn-main {
-            width: 100%; padding: 14px; background: var(--blue); color: white;
-            border: none; font-weight: 800; cursor: pointer; text-transform: uppercase;
-            font-size: 0.8rem; letter-spacing: 1px; margin-top: 1rem;
+        .btn {
+            width: 100%; padding: 1rem; background: var(--slate-900); color: white;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 0.5rem;
         }
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:hover { background: var(--primary); transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .toggle-area { margin-top: 1.5rem; font-size: 0.8rem; color: var(--dim); }
-        .toggle-area span { color: var(--blue); cursor: pointer; font-weight: 800; }
+        .toggle-container { margin-top: 1.5rem; font-size: 0.9rem; color: var(--slate-600); }
+        .toggle-link { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: none; }
 
-        #err {
-            margin-top: 1rem; padding: 10px; border: 1px solid #ef4444;
-            color: #ef4444; font-size: 0.75rem; display: none; background: rgba(239, 68, 68, 0.05);
+        #error-msg {
+            background: #fef2f2; color: #b91c1c; padding: 0.75rem; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 500; margin-top: 1rem; display: none; border: 1px solid #fee2e2;
         }
 
         .hidden { display: none; }
@@ -69,105 +78,138 @@
 <body>
 
     <div class="auth-card">
-        <div class="logo">STARFIRE <span>//</span> ACCESS</div>
-        <h2 id="title">User Login</h2>
+        <a href="/" class="logo-area">
+            <div class="logo-icon">S</div>
+            <span class="logo-text">Starfire</span>
+        </a>
 
-        <form id="auth-form" onsubmit="handleAuth(event)">
-            <div id="name-group" class="group hidden">
-                <label>Merchant Name</label>
-                <input type="text" id="full-name" placeholder="E.G. JOHN DOE">
+        <h2 id="title">Welcome Back</h2>
+        <p class="subtitle" id="subtitle">Log in to manage your store growth.</p>
+
+        <form id="auth-form">
+            <!-- SIGNUP ONLY FIELDS -->
+            <div class="form-group hidden" id="name-group">
+                <label>Full Name</label>
+                <input type="text" id="name" placeholder="John Doe">
             </div>
 
-            <div class="group">
+            <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="email" required placeholder="NAME@STORE.COM">
+                <input type="email" id="email" placeholder="name@store.com" required>
             </div>
 
-            <div class="group">
-                <label>System Password</label>
-                <input type="password" id="password" required placeholder="••••••••">
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
             </div>
 
-            <button type="submit" id="submit-btn" class="btn-main">Authorize</button>
+            <!-- SIGNUP ONLY FIELDS -->
+            <div class="form-group hidden" id="store-group">
+                <label>Shopify Store URL</label>
+                <input type="text" id="store" placeholder="your-store.myshopify.com">
+            </div>
+
+            <button type="submit" class="btn" id="submit-btn">Login to Starfire</button>
         </form>
 
-        <div id="err"></div>
+        <div id="error-msg"></div>
 
-        <div class="toggle-area">
-            <p id="toggle-msg">New to the system? <span onclick="toggleMode()">Create Account</span></p>
+        <div class="toggle-container">
+            <span id="toggle-text">Don't have an account?</span>
+            <span class="toggle-link" id="toggle-link">Sign up</span>
         </div>
     </div>
 
     <script>
-        // --- INITIALIZE SUPABASE ---
         const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        const form = document.getElementById('auth-form');
+        const toggleLink = document.getElementById('toggle-link');
+        const nameGroup = document.getElementById('name-group');
+        const storeGroup = document.getElementById('store-group');
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorMsg = document.getElementById('error-msg');
+        const toggleText = document.getElementById('toggle-text');
+
         let isLogin = true;
 
-        function toggleMode() {
+        // --- TOGGLE UI BETWEEN LOGIN AND SIGNUP ---
+        toggleLink.onclick = () => {
             isLogin = !isLogin;
-            document.getElementById('name-group').classList.toggle('hidden');
-            document.getElementById('title').innerText = isLogin ? "User Login" : "Create Account";
-            document.getElementById('submit-btn').innerText = isLogin ? "Authorize" : "Initialize";
-            document.getElementById('toggle-msg').innerHTML = isLogin ? 
-                'New to the system? <span onclick="toggleMode()">Create Account</span>' : 
-                'Already verified? <span onclick="toggleMode()">Sign In</span>';
-            document.getElementById('err').style.display = 'none';
-        }
-
-        async function handleAuth(e) {
-            e.preventDefault(); // CRITICAL: Stops the page from reloading
             
-            const errDiv = document.getElementById('err');
-            const btn = document.getElementById('submit-btn');
+            // Show/Hide signup fields
+            nameGroup.classList.toggle('hidden');
+            storeGroup.classList.toggle('hidden');
+
+            // Update text labels
+            title.innerText = isLogin ? "Welcome Back" : "Create Account";
+            subtitle.innerText = isLogin ? "Log in to manage your store growth." : "Join Starfire and automate your scaling.";
+            submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
+            toggleText.innerText = isLogin ? "Don't have an account?" : "Already have an account?";
+            toggleLink.innerText = isLogin ? "Sign up" : "Log in";
+            
+            errorMsg.style.display = "none";
+        };
+
+        // --- HANDLE SUBMISSION ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            errorMsg.style.display = "none";
+            submitBtn.innerText = "Authenticating...";
+            submitBtn.disabled = true;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const fullName = document.getElementById('full-name').value;
-
-            errDiv.style.display = 'none';
-            btn.disabled = true;
-            btn.innerText = "Processing...";
+            const fullName = document.getElementById('name').value;
+            const shopUrl = document.getElementById('store').value;
 
             try {
                 if (isLogin) {
-                    // --- LOGIN LOGIC ---
+                    // 1. SUPABASE LOGIN
                     const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    
-                    // Session established, move to dashboard
                     window.location.replace('/dashboard.html');
                 } else {
-                    // --- SIGNUP LOGIC ---
+                    // 2. SUPABASE SIGNUP
                     const { data: authData, error: authError } = await _supabase.auth.signUp({
-                        email,
+                        email, 
                         password,
-                        options: { data: { display_name: fullName } }
+                        options: { data: { full_name: fullName } }
                     });
 
                     if (authError) throw authError;
 
                     if (authData.user) {
-                        // Create their profile entry immediately
+                        // 3. CREATE PROFILE IN DATABASE
                         const { error: dbError } = await _supabase
                             .from('profiles')
-                            .insert([{ id: authData.user.id, email: email, full_name: fullName }]);
+                            .insert([{ 
+                                id: authData.user.id, 
+                                email: email, 
+                                full_name: fullName,
+                                shopify_url: shopUrl 
+                            }]);
                         
                         if (dbError) throw dbError;
                         
-                        // Move to dashboard
-                        window.location.replace('/dashboard.html');
+                        // Signup success - most Supabase projects require email confirmation.
+                        // If confirmation is OFF in your settings, this redirect will work instantly.
+                        alert("Account created! Check your email to confirm, then Login.");
+                        location.reload(); 
                     }
                 }
-            } catch (error) {
-                console.error("Auth Failure:", error.message);
-                errDiv.innerText = "SYSTEM_ERROR: " + error.message.toUpperCase();
-                errDiv.style.display = 'block';
-                btn.disabled = false;
-                btn.innerText = isLogin ? "Authorize" : "Initialize";
+            } catch (err) {
+                errorMsg.innerText = err.message;
+                errorMsg.style.display = "block";
+                submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
+                submitBtn.disabled = false;
             }
-        }
+        });
     </script>
 </body>
 </html>
