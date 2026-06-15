@@ -6,9 +6,7 @@
     <title>Starfire | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Supabase Official Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
         :root {
             --primary: #2563eb;
@@ -45,42 +43,38 @@
         nav a:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
 
         /* --- MAIN CONTENT --- */
-        main { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; position: relative; }
+        main { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem; width: calc(100% - var(--sidebar-width)); }
 
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
         .welcome h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
         .welcome p { color: var(--slate-700); font-size: 0.9rem; }
 
-        .btn-connect { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
-
-        /* --- DASHBOARD GRID --- */
+        /* --- STATS GRID --- */
         .stats-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-200); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
         .stat-card h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--slate-700); letter-spacing: 1px; margin-bottom: 0.5rem; }
         .stat-card p { font-size: 1.5rem; font-weight: 800; }
 
-        .chart-container { background: white; padding: 2rem; border-radius: 20px; border: 1px solid var(--slate-200); margin-bottom: 2rem; }
+        /* --- GRAPH FIX --- */
+        .chart-container { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 20px; 
+            border: 1px solid var(--slate-200); 
+            margin-bottom: 2rem;
+            position: relative;
+            height: 400px; /* Fixed height prevents graph jumping */
+            width: 100%;
+        }
 
         .data-tables { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; }
         .table-card { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-200); }
         .table-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
 
-        /* --- OVERLAY PROMPT --- */
-        #api-overlay {
-            position: fixed; inset: 0;
-            background: rgba(248, 250, 252, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 24px;
+        @media (max-width: 900px) {
+            aside { display: none; }
+            main { margin-left: 0; width: 100%; padding: 1.5rem; }
         }
-        .prompt-box { background: white; padding: 3rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; max-width: 450px; border: 1px solid var(--slate-200); }
-        .prompt-box h2 { margin-bottom: 1rem; }
-        .prompt-box p { color: var(--slate-700); margin-bottom: 2rem; }
-
     </style>
 </head>
 <body>
@@ -91,29 +85,16 @@
             <a href="dashboard.html" class="active">Dashboard</a>
             <a href="settings.html">AI Studio</a>
             <a href="settings.html">Growth Suite</a>
-            <a href="settings.html">Automation</a>
             <a href="settings.html">Settings</a>
         </nav>
-        <div style="margin-top: auto; font-size: 0.8rem; color: #475569; padding-bottom: 1rem;">
-            Founder Access: <span style="color: white;">Enabled</span>
-        </div>
+        <div onclick="logout()" style="margin-top: auto; font-size: 0.8rem; color: #475569; cursor: pointer;">Logout →</div>
     </aside>
 
     <main>
-        <!-- API Connection Prompt Overlay -->
-        <div id="api-overlay">
-            <div class="prompt-box">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🔌</div>
-                <h2>Connect Shopify</h2>
-                <p>To view real-time sales, inventory, and customer data, you need to link your Shopify API Key in settings.</p>
-                <a href="settings.html" class="btn-connect" style="padding: 1rem 2rem;">Go to Settings</a>
-            </div>
-        </div>
-
         <header>
             <div class="welcome">
-                <h1>Hello, <span id="merchant-name">Merchant</span></h1>
-                <p id="store-url">Synchronizing cloud data...</p>
+                <h1>Hello, <span id="merchant-name" style="color: var(--primary);">Merchant</span></h1>
+                <p id="store-url">Synchronizing system data...</p>
             </div>
             <div id="connection-status" style="font-size: 0.8rem; font-weight: bold; color: #ef4444;">
                 ● OFFLINE
@@ -128,59 +109,55 @@
         </section>
 
         <div class="chart-container">
-            <h3 style="margin-bottom: 1.5rem;">Sales Analytics</h3>
-            <canvas id="salesChart" height="100"></canvas>
+            <h3 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--slate-700); text-transform: uppercase;">Revenue Analytics</h3>
+            <canvas id="salesChart"></canvas>
         </div>
 
         <div class="data-tables">
             <div class="table-card">
                 <h3>Product Details</h3>
-                <p id="product-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No products found.</p>
+                <p style="color: var(--slate-400); font-size: 0.9rem;">Live data stream disconnected.</p>
             </div>
             <div class="table-card">
                 <h3>Recent Orders</h3>
-                <p id="order-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No recent history.</p>
+                <p style="color: var(--slate-400); font-size: 0.9rem;">Connect API in settings.</p>
             </div>
         </div>
     </main>
 
     <script>
-        // --- SUPABASE CONFIG ---
         const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function initDashboard() {
-            // 1. Get Logged in User
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (!user) {
-                window.location.replace('auth.html');
-                return;
-            }
+        let myChart = null;
 
-            // 2. Fetch Profile details from Supabase
+        async function initDashboard() {
+            // 1. Auth Check
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) { window.location.replace('auth.html'); return; }
+
+            // 2. Fetch User Profile
             const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
             
             if (profile) {
                 document.getElementById('merchant-name').innerText = profile.full_name || "Merchant";
                 
-                // 3. Check for Shopify Token
-                if (!profile.shopify_token || profile.shopify_token.length < 5) {
-                    document.getElementById('api-overlay').style.display = 'flex';
-                } else {
-                    // STORE IS CONNECTED - FETCH LIVE DATA VIA PYTHON PROXY
-                    document.getElementById('connection-status').style.color = '#10b981';
+                // 3. Real Data Sync Logic
+                if (profile.shopify_token && profile.shopify_url) {
                     document.getElementById('connection-status').innerText = '● LIVE';
+                    document.getElementById('connection-status').style.color = '#10b981';
                     document.getElementById('store-url').innerText = profile.shopify_url;
                     
-                    fetchShopifyData(profile.shopify_url, profile.shopify_token);
+                    fetchLiveShopifyData(profile.shopify_url, profile.shopify_token);
+                } else {
+                    document.getElementById('store-url').innerText = "Shopify not linked.";
                 }
             }
         }
 
-        async function fetchShopifyData(shop, token) {
+        async function fetchLiveShopifyData(shop, token) {
             try {
-                // This calls your Python route in db.py
                 const response = await fetch('/api/shopify/data', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -190,56 +167,62 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Map the real data to your IDs
                     document.getElementById('stat-sales').innerText = `$${data.total_sales}`;
                     document.getElementById('stat-inv').innerText = `${data.total_inventory} Units`;
                     document.getElementById('stat-orders').innerText = data.order_count;
                     document.getElementById('stat-cust').innerText = data.customer_count;
                     
-                    if(data.chart_data) updateChart(data.chart_data);
+                    if(data.chart_data) updateGraph(data.chart_data);
                 }
             } catch (err) {
-                console.error("Shopify Proxy Error:", err);
+                console.error("Live Sync Error:", err);
             }
         }
 
-        function initChart() {
+        function initGraph() {
             const ctx = document.getElementById('salesChart').getContext('2d');
-            window.myChart = new Chart(ctx, {
+            myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
-                        label: 'Revenue ($)',
-                        data: [0, 0, 0, 0, 0, 0, 0], 
+                        label: 'Revenue',
+                        data: [0, 0, 0, 0, 0, 0, 0],
                         borderColor: '#2563eb',
-                        tension: 0.4,
+                        backgroundColor: 'rgba(37, 99, 235, 0.05)',
                         fill: true,
-                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: false, // Allows the container to control height
                     plugins: { legend: { display: false } },
                     scales: { 
-                        y: { beginAtZero: true, grid: { display: false } },
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
                         x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        function updateChart(newData) {
-            if (window.myChart) {
-                window.myChart.data.datasets[0].data = newData;
-                window.myChart.update();
+        function updateGraph(newData) {
+            if (myChart) {
+                myChart.data.datasets[0].data = newData;
+                myChart.update();
             }
         }
 
-        // Run on Page Load
+        async function logout() {
+            await _supabase.auth.signOut();
+            window.location.replace('index.html');
+        }
+
+        // Run
+        initGraph();
         initDashboard();
-        initChart();
     </script>
 </body>
-                                                      </html>
+              </html>
