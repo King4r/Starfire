@@ -1,24 +1,47 @@
 import os
 from flask import request, jsonify
-from db import app, init_db # This imports the Flask 'app' from db.py
+from db import app, init_db 
 import admin_logic
 
-# Register Admin Routes
+# --- REGISTER ADMIN ROUTES ---
+# These are added to the 'app' object imported from db.py
+
 @app.route('/api/admin/auth', methods=['POST'])
 def admin_auth_bridge():
-    data = request.get_json()
-    if admin_logic.verify_founder(data.get('password')):
-        return jsonify({"status": "success"}), 200
-    return jsonify({"status": "error"}), 401
+    """Verify Founder credentials via admin_logic"""
+    try:
+        data = request.get_json()
+        if not data or 'password' not in data:
+            return jsonify({"status": "error", "message": "Missing password"}), 400
+            
+        if admin_logic.verify_founder(data.get('password')):
+            return jsonify({"status": "success"}), 200
+        return jsonify({"status": "error", "message": "Invalid Founder Key"}), 401
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/admin/stats', methods=['GET'])
 def admin_stats_bridge():
-    return jsonify(admin_logic.fetch_global_stats())
+    """Fetch platform metrics via admin_logic"""
+    try:
+        stats = admin_logic.fetch_global_stats()
+        return jsonify(stats), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-# Initialize DB on startup
+# --- PRODUCTION INITIALIZATION ---
+
+# Initialize the database (Supabase) once when the script loads
+# This ensures tables exist before any requests arrive.
+print("🚀 Initializing Starfire Cloud Core...")
 init_db()
 
-# Render needs the 'app' object at the top level for Gunicorn
+# This is the object Gunicorn looks for (gunicorn app:app)
+# We don't need a separate variable, 'app' is already imported from db.py
+
 if __name__ == '__main__':
+    # This part ONLY runs for local testing (Termux)
+    # Render uses the gunicorn command instead of this block.
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    print(f"📡 Local Dev Server active on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=True)
