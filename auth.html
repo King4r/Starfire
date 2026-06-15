@@ -21,11 +21,7 @@
         }
 
         /* --- RESET & BASE --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -61,8 +57,7 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             background: var(--primary);
             color: white;
             border-radius: 10px;
@@ -73,58 +68,28 @@
             font-size: 1.2rem;
         }
 
-        .logo-text {
-            font-weight: 800;
-            font-size: 1.5rem;
-            letter-spacing: -1px;
-        }
+        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: var(--slate-600);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-        }
+        h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        .subtitle { color: var(--slate-600); font-size: 0.95rem; margin-bottom: 2rem; }
 
         /* --- FORM ELEMENTS --- */
-        .form-group {
-            text-align: left;
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--slate-900);
-        }
-
+        .form-group { text-align: left; margin-bottom: 1.25rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--slate-900); }
+        
         input {
             width: 100%;
             padding: 0.85rem 1rem;
             border: 1px solid var(--slate-200);
             border-radius: 12px;
             font-size: 1rem;
-            font-family: inherit;
             transition: all 0.2s ease;
-            background-color: var(--white);
         }
 
         input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        input::placeholder {
-            color: var(--slate-400);
         }
 
         .btn {
@@ -141,42 +106,10 @@
             margin-top: 0.5rem;
         }
 
-        .btn:hover {
-            background: var(--primary);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-        }
+        .btn:hover { background: var(--primary); transform: translateY(-1px); }
 
-        /* --- UTILITIES --- */
-        .toggle-container {
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-            color: var(--slate-600);
-        }
-
-        .toggle-link {
-            color: var(--primary);
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .toggle-link:hover {
-            text-decoration: underline;
-        }
-
-        .back-home {
-            display: inline-block;
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            color: var(--slate-400);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .back-home:hover {
-            color: var(--slate-900);
-        }
+        .toggle-container { margin-top: 1.5rem; font-size: 0.9rem; color: var(--slate-600); }
+        .toggle-link { color: var(--primary); font-weight: 700; cursor: pointer; }
 
         #error-msg {
             background: #fef2f2;
@@ -188,27 +121,19 @@
             margin-top: 1rem;
             display: none;
             border: 1px solid #fee2e2;
+            text-align: left;
+            line-height: 1.4;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        /* Animation for revealing fields */
-        .fade-in {
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div class="auth-card">
-        <a href="index.html" class="logo-area">
+        <a href="/" class="logo-area">
             <div class="logo-icon">S</div>
             <span class="logo-text">Starfire</span>
         </a>
@@ -246,8 +171,6 @@
             <span id="toggle-text">Don't have an account?</span>
             <span class="toggle-link" id="toggle-link">Sign up</span>
         </div>
-
-        <a href="index.html" class="back-home">← Back to homepage</a>
     </div>
 
     <script>
@@ -265,37 +188,33 @@
 
         toggleLink.onclick = () => {
             isLogin = !isLogin;
-            
-            // Toggle groups with animation
             nameGroup.classList.toggle('hidden');
             storeGroup.classList.toggle('hidden');
+            
             if(!isLogin) {
                 nameGroup.classList.add('fade-in');
                 storeGroup.classList.add('fade-in');
             }
 
-            // Update Text
             title.innerText = isLogin ? "Welcome Back" : "Create Account";
             subtitle.innerText = isLogin ? "Log in to manage your store growth." : "Start your 14-day free trial today.";
             submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
             toggleText.innerText = isLogin ? "Don't have an account?" : "Already have an account?";
             toggleLink.innerText = isLogin ? "Sign up" : "Log in";
-            
-            // Clear errors
             errorMsg.style.display = "none";
         };
 
         form.onsubmit = async (e) => {
             e.preventDefault();
             errorMsg.style.display = "none";
-            submitBtn.innerText = "Processing...";
+            submitBtn.innerText = "Connecting to Secure Server...";
             submitBtn.disabled = true;
 
             const payload = {
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value,
-                name: document.getElementById('name').value,
-                shopify_store: document.getElementById('store').value
+                name: document.getElementById('name').value || "",
+                shopify_store: document.getElementById('store').value || ""
             };
 
             const path = isLogin ? '/api/login' : '/api/signup';
@@ -311,18 +230,20 @@
 
                 if (response.ok) {
                     localStorage.setItem('starfire_user', JSON.stringify(data));
-                    window.location.href = 'dashboard.html';
+                    window.location.href = '/dashboard.html';
                 } else {
-                    errorMsg.innerText = data.message || "Authentication failed. Check your details.";
+                    errorMsg.innerText = data.message || "Authentication failed. Please check your credentials.";
                     errorMsg.style.display = "block";
-                    submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
-                    submitBtn.disabled = false;
                 }
             } catch (err) {
-    console.error("Fetch Error:", err);
-    errorMsg.innerHTML = "<b>SERVER ERROR</b><br>The system is waking up or the database is connecting. Please wait 30 seconds and try again.";
-    errorMsg.style.display = "block";
-}
+                console.error("Fetch Error:", err);
+                // THE PRODUCTION FIX: Descriptive error for Render/Cloud
+                errorMsg.innerHTML = "<b>SYSTEM HANDSHAKE ERROR</b><br>The server is currently waking up or the database is connecting. Please wait 10 seconds and try again.";
+                errorMsg.style.display = "block";
+            } finally {
+                submitBtn.innerText = isLogin ? "Login to Starfire" : "Create My Account";
+                submitBtn.disabled = false;
+            }
         };
     </script>
 </body>
