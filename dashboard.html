@@ -3,100 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starfire | Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Starfire | Merchant Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* --- STARFIRE SAAS CORE VARIABLES --- */
         :root {
-            --primary: #2563eb;
-            --bg: #020617;
-            --card: rgba(15, 23, 42, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f8fafc;
-            --dim: #94a3b8;
+            --primary: #2563eb; /* Indigo/Blue Accent */
+            --primary-hover: #1d4ed8;
+            --bg-page: #ffffff; /* White Background */
+            --bg-card: #ffffff; /* White Cards */
+            --text-main: #1a1a1a; /* Dark Text */
+            --text-muted: #64748b; /* Gray Text */
+            --border: #e2e8f0; /* Light Gray Border */
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.03);
             --sidebar-w: 260px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-page); color: var(--text-main); display: flex; min-height: 100vh; }
 
         /* --- SIDEBAR --- */
         aside {
-            width: var(--sidebar-w); background: #010409; color: white;
+            width: var(--sidebar-w); background: var(--slate-900); color: white;
             padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
-            border-right: 1px solid var(--border); z-index: 100;
+            border-right: 1px solid var(--border);
         }
-        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
-        .logo-box { width: 30px; height: 30px; background: var(--primary); border-radius: 8px; }
+        .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;}
+        .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; }
 
         nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
-        nav a { color: var(--dim); text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 600; transition: 0.3s; }
-        nav a.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); border-right: 3px solid var(--primary); }
+        nav a { color: #94a3b8; text-decoration: none; padding: 0.8rem 1rem; border-radius: 10px; font-weight: 500; transition: 0.3s; }
+        nav a.active { background: var(--primary); color: white; }
         nav a:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
 
         /* --- MAIN CONTENT --- */
-        main { margin-left: var(--sidebar-w); flex: 1; padding: 3rem; position: relative; width: 100%; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
-        .welcome h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        main { margin-left: var(--sidebar-w); flex: 1; padding: 2.5rem; position: relative; }
 
-        /* --- STATS & CARDS --- */
-        .grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .card { background: var(--card); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
-        .label { font-size: 0.65rem; text-transform: uppercase; color: var(--dim); letter-spacing: 1px; margin-bottom: 0.8rem; }
-        .val { font-size: 1.8rem; font-weight: 800; color: white; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        .welcome h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
+        .welcome p { color: var(--slate-700); font-size: 0.9rem; }
 
-        /* --- AI INSIGHT PANEL --- */
-        .ai-panel { background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), transparent); border: 1px solid var(--primary); margin-bottom: 2rem; }
-        .ai-status { color: var(--primary); font-family: 'JetBrains Mono'; font-size: 0.7rem; margin-bottom: 10px; display: block; }
+        .btn-connect { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
-        .chart-container { background: var(--card); padding: 2rem; border-radius: 24px; border: 1px solid var(--border); height: 350px; }
+        /* --- DASHBOARD GRID --- */
+        .stats-grid { display: grid; grid-template-cols: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-100); box-shadow: var(--shadow); }
+        .stat-card h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--slate-700); letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .stat-card p { font-size: 1.5rem; font-weight: 800; }
 
-        @media (max-width: 900px) { aside { display: none; } main { margin-left: 0; padding: 1.5rem; } }
+        .chart-container { background: var(--bg-card); padding: 2rem; border-radius: 20px; border: 1px solid var(--slate-200); margin-bottom: 2rem; height: 400px; }
+
+        .data-tables { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; }
+        .table-card { background: var(--bg-card); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--slate-200); }
+        .table-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* --- OVERLAY PROMPT --- */
+        #api-overlay {
+            position: absolute; /* Positioned relative to main */
+            top: 150px; left: 2.5rem; right: 2.5rem; bottom: 0;
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 24px;
+        }
+        .prompt-box { background: var(--white); padding: 3rem; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; max-width: 450px; border: 1px solid var(--slate-200); }
+        .prompt-box h2 { margin-bottom: 1rem; }
+        .prompt-box p { color: var(--slate-700); margin-bottom: 2rem; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            aside { display: none; }
+            main { margin-left: 0; padding: 1.5rem; }
+            .stats-grid { grid-template-cols: 1fr 1fr; }
+            .chart-container { height: 300px; }
+        }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo"><div class="logo-box"></div> Starfire</div>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            Starfire
+        </div>
         <nav>
-            <a href="dashboard.html" class="active">📊 Dashboard</a>
-            <a href="storeeditor.html">📝 Store Editor</a>
-            <a href="#">⚡ AI Studio</a>
-            <a href="#">📈 Growth Suite</a>
-            <a href="settings.html" style="margin-top: auto;">⚙️ Settings</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="storeeditor.html">Store Editor</a>
+            <a href="settings.html">AI Studio</a>
+            <a href="settings.html">Growth Suite</a>
+            <a href="settings.html" style="margin-top: auto;">Settings</a>
         </nav>
-        <div onclick="logout()" style="color: var(--dim); cursor: pointer; font-size: 0.85rem; padding: 1rem;">Logout →</div>
+        <div onclick="logout()" style="margin-top: auto; font-size: 0.8rem; color: #475569; padding-bottom: 1rem; cursor: pointer;">Logout →</div>
     </aside>
 
     <main>
-        <header>
-            <div class="welcome">
-                <h1>Command Center // <span id="merchant-name" style="color: var(--primary);">Merchant</span></h1>
-                <p id="store-url" style="color: var(--dim); font-size: 0.9rem; margin-top: 5px;">Synchronizing Cloud Core...</p>
+        <!-- API Connection Prompt (Hidden by Default) -->
+        <div id="api-overlay">
+            <div class="prompt-box">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔌</div>
+                <h2>Connect Shopify</h2>
+                <p>To view real-time sales, inventory, and customer data, you need to link your Shopify API Key in settings.</p>
+                <a href="settings.html" class="btn-connect" style="padding: 1rem 2rem;">Go to Settings</a>
             </div>
-            <div id="status-tag" style="font-size: 0.7rem; font-weight: 800; color: var(--dim);">● SYSTEM STANDBY</div>
-        </header>
-
-        <!-- AI Neural Insight Panel -->
-        <div class="card ai-panel">
-            <span class="ai-status">NEURAL_GROWTH_SUGGESTION_V4.0</span>
-            <p id="ai-insight" style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
-                Establishing neural link with Gemini AI... Analyzing market trends for your store.
-            </p>
         </div>
 
-        <section class="grid">
-            <div class="card"><div class="label">Total Sales</div><div class="val mono" id="stat-sales">$0.00</div></div>
-            <div class="card"><div class="label">Inventory</div><div class="val mono" id="stat-inv">0 Units</div></div>
-            <div class="card"><div class="label">Orders</div><div class="val mono" id="stat-orders">0</div></div>
-            <div class="card"><div class="label">Customers</div><div class="val mono" id="stat-cust">0</div></div>
+        <header>
+            <div class="welcome">
+                <h1>Hello, <span id="merchant-name">Merchant</span></h1>
+                <p id="store-url">Loading store data...</p>
+            </div>
+            <div id="connection-status" style="font-size: 0.8rem; font-weight: bold; color: #ef4444;">
+                ● OFFLINE
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Sales</h4>
+                <p id="stat-sales">$0.00</p>
+            </div>
+            <div class="stat-card">
+                <h4>Inventory</h4>
+                <p id="stat-inv">0 Units</p>
+            </div>
+            <div class="stat-card">
+                <h4>Orders</h4>
+                <p id="stat-orders">0</p>
+            </div>
+            <div class="stat-card">
+                <h4>Customers</h4>
+                <p id="stat-cust">0</p>
+            </div>
         </section>
 
         <div class="chart-container">
-            <div class="label">Revenue_Velocity_Matrix</div>
+            <h3 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--slate-700);">Revenue Analytics</h3>
             <canvas id="salesChart"></canvas>
+        </div>
+
+        <div class="data-tables">
+            <div class="table-card">
+                <h3>Product Details</h3>
+                <p id="product-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No products found.</p>
+            </div>
+            <div class="table-card">
+                <h3>Recent Orders</h3>
+                <p id="order-list-empty" style="color: var(--slate-400); font-size: 0.9rem;">No recent history.</p>
+            </div>
         </div>
     </main>
 
@@ -109,88 +168,115 @@
 
         async function initDashboard() {
             const { data: { user } } = await _supabase.auth.getUser();
-            if (!user) { window.location.replace('auth.html'); return; }
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
 
             const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
             
             if (profile) {
-                document.getElementById('merchant-name').innerText = profile.full_name || "Merchant";
+                document.getElementById('merchant-name').innerText = profile.full_name || 'Merchant';
                 
-                if (profile.shopify_token && profile.shopify_url) {
-                    document.getElementById('status-tag').innerText = "● LIVE DATA STREAM";
-                    document.getElementById('status-tag').style.color = "#10b981";
-                    document.getElementById('store-url').innerText = profile.shopify_url;
-                    
-                    fetchLiveShopifyData(profile.shopify_url, profile.shopify_token);
-                    fetchAIInsight(profile.shopify_url);
+                // Check Shopify Connection Status
+                const hasKey = localStorage.getItem('shopify_api_key') || profile.shopify_token;
+                const shopUrl = localStorage.getItem('shopify_url') || profile.shopify_url;
+
+                if (!hasKey || !shopUrl) {
+                    // Show the overlay if connection details are missing
+                    document.getElementById('api-overlay').style.display = 'flex';
+                    document.getElementById('connection-status').style.color = '#ef4444';
+                    document.getElementById('connection-status').innerText = '● ACTION REQUIRED';
                 } else {
-                    document.getElementById('store-url').innerText = "Shopify integration required in Settings.";
+                    // Connection Found - Hide Overlay & Update UI
+                    document.getElementById('api-overlay').style.display = 'none';
+                    document.getElementById('connection-status').style.color = '#10b981';
+                    document.getElementById('connection-status').innerText = '● LIVE';
+                    document.getElementById('store-url').innerText = shopUrl;
+                    
+                    // Fetch Live Data
+                    fetchLiveShopifyData(shopUrl, hasKey);
                 }
+            } else {
+                // User logged in but profile not found (shouldn't happen with current logic)
+                console.error("Profile not found in Supabase!");
+                document.getElementById('store-url').innerText = "Error loading profile.";
             }
             renderChart();
         }
 
         async function fetchLiveShopifyData(shop, token) {
-            const res = await fetch('/api/shopify/data', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ shop_url: shop, access_token: token })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                document.getElementById('stat-sales').innerText = `$${data.total_sales}`;
-                document.getElementById('stat-orders').innerText = data.order_count;
-                document.getElementById('stat-cust').innerText = data.customer_count;
-                document.getElementById('stat-inv').innerText = `${data.total_inventory} Units`;
-                if(data.chart_data) updateGraph(data.chart_data);
+            try {
+                const response = await fetch('/api/shopify/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shop_url: shop, access_token: token })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('stat-sales').innerText = `$${data.total_sales}`;
+                    document.getElementById('stat-inv').innerText = `${data.total_inventory} Units`;
+                    document.getElementById('stat-orders').innerText = data.order_count;
+                    document.getElementById('stat-cust').innerText = data.customer_count;
+                    
+                    if(data.chart_data) updateChart(data.chart_data);
+                } else {
+                    console.error("Shopify API Error:", data.error);
+                    // Handle API errors gracefully
+                }
+            } catch (err) {
+                console.error("Failed to fetch Shopify data:", err);
+                // Handle network errors
             }
         }
 
-        async function fetchAIInsight(shop) {
-            try {
-                const res = await fetch('/api/ai/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        prompt: "Give me one aggressive e-commerce growth tip based on current high-converting trends for this store.",
-                        store_url: shop 
-                    })
-                });
-                const data = await res.json();
-                if (data.answer) {
-                    document.getElementById('ai-insight').innerText = data.answer;
-                }
-            } catch (e) { console.error("AI Link Offline"); }
-        }
-
-        function renderChart() {
+        function initChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
-            myChart = new Chart(ctx, {
+            // Prevent double chart initialization if called multiple times
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+            window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
-                        data: [0, 0, 0, 0, 0, 0, 0],
+                        label: 'Revenue ($)',
+                        data: [0, 0, 0, 0, 0, 0, 0], // Default to 0 if not connected
                         borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.05)',
-                        fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.02)' } }, x: { grid: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Crucial for fitting container
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
         }
 
-        function updateGraph(newData) {
-            if (myChart) { myChart.data.datasets[0].data = newData; myChart.update(); }
+        function updateChart(newData) {
+            if (window.myChart) {
+                window.myChart.data.datasets[0].data = newData;
+                window.myChart.update();
+            }
         }
 
+        // --- LOGOUT ---
         async function logout() {
             await _supabase.auth.signOut();
             window.location.replace('index.html');
         }
 
+        // --- INITIALIZE ON LOAD ---
         initDashboard();
     </script>
 </body>
