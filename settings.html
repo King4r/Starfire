@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Starfire | Settings</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -24,14 +25,8 @@
 
         /* --- SIDEBAR --- */
         aside {
-            width: var(--sidebar-width);
-            background: var(--slate-900);
-            color: white;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
+            width: var(--sidebar-width); background: var(--slate-900); color: white;
+            padding: 2rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
         }
         .logo { font-weight: 800; font-size: 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;}
         .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; }
@@ -41,205 +36,196 @@
         nav a:hover { background: rgba(255,255,255,0.05); color: white; }
         nav a.active { background: var(--primary); color: white; }
 
-        .logout-btn {
-            margin-top: auto;
-            color: #94a3b8;
-            text-decoration: none;
-            padding: 0.8rem 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .logout-btn:hover { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .logout-btn { margin-top: auto; color: #94a3b8; text-decoration: none; padding: 0.8rem 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .logout-btn:hover { color: var(--danger); }
 
         /* --- MAIN CONTENT --- */
-        main { margin-left: var(--sidebar-width); flex: 1; padding: 3rem; max-width: 900px; }
-        header { margin-bottom: 3rem; }
+        main { margin-left: var(--sidebar-width); flex: 1; padding: 3rem; max-width: 1000px; }
+        header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; }
         header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
 
-        .settings-card {
-            background: var(--white);
-            border-radius: 20px;
-            border: 1px solid var(--slate-200);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .settings-card h3 { margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid var(--slate-100); padding-bottom: 1rem; }
+        .settings-card { background: var(--white); border-radius: 20px; border: 1px solid var(--slate-200); padding: 2rem; margin-bottom: 2rem; }
+        .settings-card h3 { margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700; color: var(--slate-900); border-bottom: 1px solid var(--slate-100); padding-bottom: 1rem; }
 
         .form-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .form-row { margin-bottom: 1.5rem; }
-        
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--slate-700); }
-        input, select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--slate-200);
-            border-radius: 10px;
-            font-size: 1rem;
-            outline: none;
-        }
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--slate-700); text-transform: uppercase; }
+        input, select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--slate-200); border-radius: 10px; font-size: 1rem; outline: none; }
+        input:focus { border-color: var(--primary); }
 
         .input-wrapper { position: relative; display: flex; align-items: center; }
-        .toggle-btn {
-            position: absolute; right: 10px; background: none; border: none; 
-            color: var(--primary); font-size: 0.75rem; font-weight: 700; cursor: pointer;
-        }
+        .toggle-btn { position: absolute; right: 12px; background: none; border: none; color: var(--primary); font-size: 0.7rem; font-weight: 800; cursor: pointer; }
 
-        .save-area { display: flex; align-items: center; gap: 1rem; }
-        .btn-save {
-            background: var(--slate-900);
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        /* --- FAQ / HELP SECTION --- */
+        .faq-section { margin-top: 4rem; border-top: 1px solid var(--slate-200); pt: 2rem; }
+        .faq-item { border: 1px solid var(--slate-200); border-radius: 12px; margin-bottom: 0.5rem; background: white; overflow: hidden; }
+        .faq-question { padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; transition: 0.2s; }
+        .faq-question:hover { background: var(--slate-50); }
+        .faq-answer { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: 0.3s ease-out; color: var(--slate-700); font-size: 0.9rem; line-height: 1.6; }
+        .faq-item.active .faq-answer { padding: 1rem 1.5rem; max-height: 300px; border-top: 1px solid var(--slate-100); }
+
+        .btn-save { background: var(--slate-900); color: white; padding: 1rem 2.5rem; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-save.success { background: var(--primary-success); }
 
+        @media (max-width: 900px) { aside { display: none; } main { margin-left: 0; padding: 1.5rem; } }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo">
-            <div class="logo-icon"></div>
-            Starfire
-        </div>
+        <div class="logo"><div class="logo-icon"></div> Starfire</div>
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="#">AI Studio</a>
-            <a href="#">Growth Suite</a>
-            <a href="#" class="active">Settings</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="#">⚡ AI Studio</a>
+            <a href="#">📈 Growth Suite</a>
+            <a href="settings.html" class="active">⚙️ Settings</a>
         </nav>
-        <div class="logout-btn" onclick="logout()">
-            <span>🚪</span> Logout
-        </div>
+        <div class="logout-btn" onclick="logout()">Logout</div>
     </aside>
 
     <main>
         <header>
-            <h1>System Settings</h1>
-            <p>Configure your store environment and secure integrations.</p>
+            <div>
+                <h1>System Settings</h1>
+                <p style="color: var(--slate-700);">Link your neural core to Shopify & Marketing APIs.</p>
+            </div>
+            <a href="#faq" style="text-decoration: none; background: #e0e7ff; color: var(--primary); padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;">HELP & FAQ</a>
         </header>
 
-        <!-- General Settings -->
         <section class="settings-card">
-            <h3>General Store Config</h3>
-            
+            <h3>Shopify Integration</h3>
             <div class="form-row">
-                <label>Shopify Store URL</label>
-                <!-- autocomplete="off" stops browser from guessing this is a username -->
+                <label>Store Domain</label>
                 <input type="text" id="store-url" autocomplete="off" placeholder="your-store.myshopify.com">
             </div>
-
             <div class="form-row">
                 <label>Admin API Access Token</label>
                 <div class="input-wrapper">
-                    <!-- autocomplete="new-password" stops the auto-fill of your LOGIN password -->
-                    <input type="password" id="api-token" autocomplete="new-password" name="shopify_token_secure" placeholder="shpat_xxxxxxxxxxxxxxxx">
+                    <input type="password" id="api-token" autocomplete="new-password" placeholder="shpat_xxxxxxxxxxxxxxxx">
                     <button class="toggle-btn" onclick="toggleToken()">SHOW</button>
-                </div>
-            </div>
-
-            <div class="form-grid">
-                <div>
-                    <label>Store Currency</label>
-                    <select id="store-currency">
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="CAD">CAD ($)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Store Geography (Region)</label>
-                    <select id="store-region">
-                        <option value="US">North America (US/CA)</option>
-                        <option value="EU">European Union</option>
-                        <option value="UK">United Kingdom</option>
-                        <option value="AS">Asia Pacific</option>
-                    </select>
                 </div>
             </div>
         </section>
 
-        <!-- Integration Settings -->
         <section class="settings-card">
-            <h3>Integrations</h3>
-            <div class="form-row">
-                <label>SMTP Provider</label>
-                <select id="smtp-provider">
-                    <option value="resend">Resend (High Performance)</option>
-                    <option value="sendgrid">SendGrid</option>
-                </select>
+            <h3>Marketing & Localization</h3>
+            <div class="form-grid">
+                <div>
+                    <label>Currency</label>
+                    <select id="store-currency">
+                        <option value="USD">USD ($)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="EUR">EUR (€)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Email Provider</label>
+                    <select id="smtp-provider">
+                        <option value="resend">Resend.com</option>
+                        <option value="sendgrid">SendGrid</option>
+                    </select>
+                </div>
             </div>
             <div class="form-row">
-                <label>Integration API Key</label>
+                <label>Resend API Key</label>
                 <input type="password" id="smtp-key" autocomplete="new-password" placeholder="re_xxxxxxxxxxxx">
             </div>
         </section>
 
-        <div class="save-area">
-            <button class="btn-save" id="save-btn" onclick="saveSettings()">Save Changes</button>
-            <span id="save-msg" style="display: none; font-size: 0.85rem; font-weight: 600; color: var(--primary-success);">Settings applied successfully!</span>
+        <button class="btn-save" id="save-btn" onclick="saveSettings()">Apply Changes</button>
+
+        <!-- FAQ SECTION -->
+        <div class="faq-section" id="faq">
+            <h3 style="margin-bottom: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 0.9rem; color: var(--slate-400); letter-spacing: 2px;">Support Intelligence</h3>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">What is Starfire about? <span>+</span></div>
+                <div class="faq-answer">Starfire is an all-in-one neural command center for Shopify store owners. We replace 5+ app subscriptions by combining AI-powered lifestyle photography, TikTok trend scanning, and automated email/social marketing into a single high-performance interface.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">How to find and connect Shopify Admin API key? <span>+</span></div>
+                <div class="faq-answer">
+                    1. Go to your Shopify Admin > Settings > Apps and Sales Channels.<br>
+                    2. Click 'Develop Apps' > 'Create an App'.<br>
+                    3. Under 'Configuration', select 'Admin API Integration' and enable scopes for Products, Orders, and Customers.<br>
+                    4. Install the app and copy the 'Admin API Access Token' (starts with shpat_).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">How to connect to Resend? <span>+</span></div>
+                <div class="faq-answer">
+                    1. Create a free account at Resend.com.<br>
+                    2. Go to the 'API Keys' tab in your Resend dashboard.<br>
+                    3. Create a new key with 'Full Access' and copy it.<br>
+                    4. Paste it into the Integration Key field in Starfire Settings.
+                </div>
+            </div>
         </div>
     </main>
 
     <script>
-        // Load settings
-        window.onload = () => {
-            document.getElementById('store-url').value = localStorage.getItem('shopify_url') || '';
-            document.getElementById('api-token').value = localStorage.getItem('shopify_api_key') || '';
-            document.getElementById('store-currency').value = localStorage.getItem('store_currency') || 'USD';
-            document.getElementById('store-region').value = localStorage.getItem('store_region') || 'US';
+        // --- CLOUD CONFIG ---
+        const SUPABASE_URL = "https://ajhbnmcqtkyvljrjicgw.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqaGJubWNxdGt5dmxqcmppY2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MjEwOTYsImV4cCI6MjA5NzA5NzA5Nn0.luJgBJvtASOMogTAhp4MPXXYfYrIXMALIKQfq_fIKNk";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Load existing settings from Cloud
+        window.onload = async () => {
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) { window.location.replace('auth.html'); return; }
+
+            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+            if (profile) {
+                document.getElementById('store-url').value = profile.shopify_url || '';
+                document.getElementById('api-token').value = profile.shopify_token || '';
+                document.getElementById('smtp-key').value = profile.smtp_key || '';
+                document.getElementById('store-currency').value = profile.currency || 'USD';
+            }
         };
+
+        async function saveSettings() {
+            const btn = document.getElementById('save-btn');
+            const { data: { user } } = await _supabase.auth.getUser();
+            
+            const updates = {
+                shopify_url: document.getElementById('store-url').value,
+                shopify_token: document.getElementById('api-token').value,
+                smtp_key: document.getElementById('smtp-key').value,
+                currency: document.getElementById('store-currency').value
+            };
+
+            btn.innerText = "Synchronizing...";
+            const { error } = await _supabase.from('profiles').update(updates).eq('id', user.id);
+
+            if (!error) {
+                btn.classList.add('success');
+                btn.innerText = "Changes Applied";
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btn.innerText = "Apply Changes";
+                }, 2000);
+            } else {
+                alert("Cloud Sync Failed: " + error.message);
+            }
+        }
+
+        function toggleFaq(el) {
+            el.parentElement.classList.toggle('active');
+            const span = el.querySelector('span');
+            span.innerText = el.parentElement.classList.contains('active') ? '−' : '+';
+        }
 
         function toggleToken() {
             const input = document.getElementById('api-token');
-            const btn = document.querySelector('.toggle-btn');
             input.type = input.type === "password" ? "text" : "password";
-            btn.innerText = input.type === "password" ? "SHOW" : "HIDE";
         }
 
-        function saveSettings() {
-            const btn = document.getElementById('save-btn');
-            const msg = document.getElementById('save-msg');
-
-            // Persist to LocalStorage
-            localStorage.setItem('shopify_url', document.getElementById('store-url').value);
-            localStorage.setItem('shopify_api_key', document.getElementById('api-token').value);
-            localStorage.setItem('store_currency', document.getElementById('store-currency').value);
-            localStorage.setItem('store_region', document.getElementById('store-region').value);
-
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.classList.add('success');
-                btn.innerText = "Saved";
-                msg.style.display = "inline";
-
-                setTimeout(() => {
-                    btn.classList.remove('success');
-                    btn.innerText = "Save Changes";
-                    btn.disabled = false;
-                    msg.style.display = "none";
-                }, 2000);
-            }, 600);
-        }
-
-        function logout() {
-            // Clear specific user session data but keep settings if you want, 
-            // OR clear everything for full security:
-            localStorage.removeItem('starfire_user');
-            window.location.href = 'auth.html';
+        async function logout() {
+            await _supabase.auth.signOut();
+            window.location.replace('index.html');
         }
     </script>
 </body>
-</html>
+    </html>
