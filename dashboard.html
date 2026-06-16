@@ -80,14 +80,17 @@
 <body>
 
     <aside>
+    <aside>
         <div class="logo"><div class="logo-icon"></div> Starfire</div>
         <nav>
-            <a href="dashboard.html" class="active">Dashboard</a>
-            <a href="settings.html">AI Studio</a>
-            <a href="settings.html">Growth Suite</a>
-            <a href="settings.html">Settings</a>
+            <a href="dashboard.html" class="active">📊 Dashboard</a>
+            <!-- NEW LINK ADDED BELOW -->
+            <a href="storeeditor.html">📝 Store Editor</a>
+            <a href="settings.html">⚡ AI Studio</a>
+            <a href="settings.html">📈 Growth Suite</a>
+            <a href="settings.html" style="margin-top: auto;">⚙️ Settings</a>
         </nav>
-        <div onclick="logout()" style="margin-top: auto; font-size: 0.8rem; color: #475569; cursor: pointer;">Logout →</div>
+        <div onclick="userLogout()" style="color: var(--dim); cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 1rem;">Logout →</div>
     </aside>
 
     <main>
